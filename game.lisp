@@ -21,6 +21,7 @@
 (gamekit:define-image :letter-o "menu/letter-o.png")
 (gamekit:define-image :letter-p "menu/letter-p.png")
 (gamekit:define-image :letter-u "menu/letter-u.png")
+(gamekit:define-image :under-text "menu/under-text.png")
 
 ; Start the game loop
 (gamekit:start :the-game)
@@ -56,11 +57,12 @@
   (case *game-state* 
     (0 
       (gamekit:draw-image (gamekit:vec2 0 0) :background)
+      (gamekit:draw-image (gamekit:vec2 320 520) :under-text)
       (gamekit:draw-image (gamekit:vec2 *letter-padding* (letter-height 400 0)) :letter-m)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 110) (letter-height 400 20)) :letter-o)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (letter-height 370 40)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (letter-height 400 10)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (letter-height 400 50)) :letter-u)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 110) (letter-height 390 20)) :letter-o)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (letter-height 360 40)) :letter-p)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (letter-height 360 10)) :letter-p)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (letter-height 390 50)) :letter-u)
     
       (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
     )
