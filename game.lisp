@@ -26,24 +26,29 @@
 ; Start the game loop
 (gamekit:start :the-game)
 
-; Variables
-(defvar *player-position* (gamekit:vec2 400 180))
+; player vars
+(defvar *player-position* (gamekit:vec2 400 100))
 (defvar *move-dir* 0)
+(defvar *velocity* 0)
+(defvar *grounded* t)
 (defvar *speed* 2)
+
+;; scene vars
 (defvar *clouds-one-pos-x* 0)
 (defvar *clouds-two-pos-x* 800)
 
 ;; menu vars
 (defvar *letter-padding* 220)
 (defvar *letter-move* 0)
-(defvar *fade-in* nil)
+(defvar *transitioning* nil)
 (defvar *alpha* 0)
 
 (defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
 ; Methods
 (defun update-position ()
-  (setf (gamekit:x *player-position*) (+ (* *move-dir* *speed*) (gamekit:x *player-position*))))
+  (setf (gamekit:x *player-position*) (+ (* *move-dir* *speed*) (gamekit:x *player-position*)))
+  (incf (gamekit:y *player-position*) *velocity*))
 
 (defun real-time-seconds ()
   "Return seconds since certain point of time"
@@ -63,8 +68,6 @@
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (letter-height 360 40)) :letter-p)
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (letter-height 360 10)) :letter-p)
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (letter-height 390 50)) :letter-u)
-    
-      (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
     )
 
     (1
@@ -80,29 +83,41 @@
 
     (2 ())
   )
+  
+  (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
       
   (gamekit:print-text (write-to-string *move-dir*) 10 590)
   (gamekit:print-text (write-to-string (gamekit:x *player-position*)) 10 570)
-  (gamekit:print-text (write-to-string *fade-in*) 10 550)
+  (gamekit:print-text (write-to-string *transitioning*) 10 550)
   (gamekit:print-text (write-to-string *alpha*) 10 530)
   (gamekit:print-text (write-to-string *game-state*) 10 510)
+  (gamekit:print-text (write-to-string *grounded*) 10 490)
+  (gamekit:print-text (write-to-string *velocity*) 10 470)
 )
 
 (defmethod gamekit:act ((app :the-game))
   (case *game-state*
     (0 
       (setf *letter-move* (* 2 (real-time-seconds)))
-      (if *fade-in* 
+      (if *transitioning* 
         (incf *alpha* 0.02))
       (if (>= *alpha* 1)
-        (setf *fade-in* nil))
-      (if (>= *alpha* 1)
         (setf *game-state* 1))
-      (if (>= *alpha* 1)
-        (setf *alpha* 0))
     )
     
-    (1 
+    (1
+      (if *transitioning* 
+        (decf *alpha* 0.02))
+      (if (<= *alpha* 0)
+        (setf *transitioning* nil))
+
+      (if (not *grounded*) (decf *velocity* 0.2))
+
+      (when (< (gamekit:y *player-position*) 100) 
+        (setf *velocity* 0)
+        (setf *grounded* t)
+        (setf (gamekit:y *player-position*) 100))
+      
       (update-position)
       (if (< *clouds-one-pos-x* -800) (setf *clouds-one-pos-x* 0))
       (decf *clouds-one-pos-x* 0.3)
@@ -128,9 +143,19 @@
   (lambda () (setf *move-dir* 0)))
 
 (gamekit:bind-button :space :pressed
-  (case *game-state* 
-    (0 (lambda () (setf *fade-in* t)))
-    (1 (lambda () (setf *move-dir* 0)))
-    (2 ())
+  (lambda () 
+    (case *game-state* 
+      (0 
+        (setf *transitioning* t)
+      )
+      
+      (1 
+          (when *grounded* 
+            (setf *velocity* 5)
+            (setf *grounded* nil))
+      )
+      
+      (2 ())
+    ) 
   )
 )
