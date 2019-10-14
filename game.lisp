@@ -14,6 +14,7 @@
 (gamekit:define-image :player-left  "moppy-left.png")
 (gamekit:define-image :player-front "moppy-front.png")
 
+(gamekit:define-image :block "block.png")
 (gamekit:define-image :clouds "clouds.png")
 (gamekit:define-image :background "background.png")
 
@@ -22,9 +23,15 @@
 (gamekit:define-image :letter-p "menu/letter-p.png")
 (gamekit:define-image :letter-u "menu/letter-u.png")
 (gamekit:define-image :under-text "menu/under-text.png")
+(gamekit:define-image :menu-bg "menu/menu-bg.png")
+(gamekit:define-image :menu-f-1 "menu/menu-flower-1.png")
+(gamekit:define-image :menu-f-2 "menu/menu-flower-2.png")
+(gamekit:define-image :menu-f-3 "menu/menu-flower-3.png")
 
 ; Start the game loop
 (gamekit:start :the-game)
+
+(defvar *debug* nil)
 
 ; player vars
 (defvar *player-position* (gamekit:vec2 400 100))
@@ -38,7 +45,7 @@
 (defvar *clouds-two-pos-x* 800)
 
 ;; menu vars
-(defvar *letter-padding* 220)
+(defvar *letter-padding* 210)
 (defvar *letter-move* 0)
 (defvar *transitioning* nil)
 (defvar *alpha* 0)
@@ -54,20 +61,24 @@
   "Return seconds since certain point of time"
   (/ (get-internal-real-time) internal-time-units-per-second))
 
-(defun letter-height (letter-height init-value)
+(defun moving-height (letter-height init-value)
   (+ letter-height (* 5 (sin (+ *letter-move* init-value)))))
 
 ; Game logic
 (defmethod gamekit:draw ((app :the-game))
   (case *game-state* 
     (0 
-      (gamekit:draw-image (gamekit:vec2 0 0) :background)
-      (gamekit:draw-image (gamekit:vec2 320 520) :under-text)
-      (gamekit:draw-image (gamekit:vec2 *letter-padding* (letter-height 400 0)) :letter-m)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 110) (letter-height 390 20)) :letter-o)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (letter-height 360 40)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (letter-height 360 10)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (letter-height 390 50)) :letter-u)
+      (gamekit:draw-image (gamekit:vec2 0 0) :menu-bg)
+      (gamekit:draw-image (gamekit:vec2 310 520) :under-text)
+      (gamekit:draw-image (gamekit:vec2 *letter-padding* (moving-height 400 0)) :letter-m)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 110) (moving-height 390 20)) :letter-o)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (moving-height 360 40)) :letter-p)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (moving-height 360 10)) :letter-p)
+      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (moving-height 390 50)) :letter-u)
+      
+      (gamekit:draw-image (gamekit:vec2 0 (moving-height -20 10)) :menu-f-1)
+      (gamekit:draw-image (gamekit:vec2 0 (moving-height -30 20)) :menu-f-2)
+      (gamekit:draw-image (gamekit:vec2 0 (moving-height -10 10)) :menu-f-3)
     )
 
     (1
@@ -79,20 +90,22 @@
         (1  (gamekit:draw-image *player-position* :player-right))
         (-1 (gamekit:draw-image *player-position* :player-left))
         (0  (gamekit:draw-image *player-position* :player-front)))
+
+      ;(gamekit:draw-image (gamekit:vec2 100 110) :block) ;100 - 130, 110, 140
     )
 
     (2 ())
   )
   
   (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
-      
-  (gamekit:print-text (write-to-string *move-dir*) 10 590)
-  (gamekit:print-text (write-to-string (gamekit:x *player-position*)) 10 570)
-  (gamekit:print-text (write-to-string *transitioning*) 10 550)
-  (gamekit:print-text (write-to-string *alpha*) 10 530)
-  (gamekit:print-text (write-to-string *game-state*) 10 510)
-  (gamekit:print-text (write-to-string *grounded*) 10 490)
-  (gamekit:print-text (write-to-string *velocity*) 10 470)
+  (when *debug*
+    (gamekit:print-text (write-to-string *move-dir*) 10 590)
+    (gamekit:print-text (write-to-string (gamekit:x *player-position*)) 10 570)
+    (gamekit:print-text (write-to-string *transitioning*) 10 550)
+    (gamekit:print-text (write-to-string *alpha*) 10 530)
+    (gamekit:print-text (write-to-string *game-state*) 10 510)
+    (gamekit:print-text (write-to-string *grounded*) 10 490)
+    (gamekit:print-text (write-to-string *velocity*) 10 470))
 )
 
 (defmethod gamekit:act ((app :the-game))
