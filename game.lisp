@@ -17,6 +17,7 @@
 (gamekit:define-image :block "block.png" :use-nearest-interpolation t)
 (gamekit:define-image :clouds "clouds.png" :use-nearest-interpolation t)
 (gamekit:define-image :background "background.png" :use-nearest-interpolation t)
+(gamekit:define-image :blank "blank.png" :use-nearest-interpolation t)
 
 (gamekit:define-image :letter-m "menu/letter-m.png" :use-nearest-interpolation t)
 (gamekit:define-image :letter-o "menu/letter-o.png" :use-nearest-interpolation t)
@@ -34,7 +35,6 @@
 (defvar *debug* nil)
 
 ; player vars
-(defvar *player-position* (gamekit:vec2 400 100))
 (defvar *move-dir* 0)
 (defvar *velocity* 0)
 (defvar *grounded* t)
@@ -50,14 +50,12 @@
 (defvar *transitioning* nil)
 (defvar *alpha* 0)
 
-(defvar *collides* nil)
-
 (defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
 ; Methods
 (defun update-position ()
-  (setf (gamekit:x *player-position*) (+ (* *move-dir* *speed*) (gamekit:x *player-position*)))
-  (incf (gamekit:y *player-position*) *velocity*))
+  (setf (gamekit:x (pos *player*)) (+ (* *move-dir* *speed*) (gamekit:x (pos *player*))))
+  (incf (gamekit:y (pos *player*)) *velocity*))
 
 (defun real-time-seconds ()
   "Return seconds since certain point of time"
@@ -76,24 +74,61 @@
   )
 )
 
+(defun check-collision-all (item)
+  (loop
+    :with *collides* := nil
+    :for elem :in *blocks* 
+    :when (check-collision item elem)
+    :do (setf *collides* t)
+    (return *collides*)))
+
 ; objects
+;; TODO: collision area vec4 
 (defclass block-item ()
   (
     (src  :accessor src)
     (pos  :accessor pos)
     (size :accessor size)
+    (draw-pos :reader draw-pos)
   )
 )
 
+(defmethod draw-pos ((object block-item))
+   (gamekit:vec2 (- (gamekit:x (pos object)) 10) (gamekit:y (pos object)))
+)
+
+(defvar *player* (make-instance 'block-item))
+(setf (src  *player*) nil)
+(setf (pos  *player*) (gamekit:vec2 400 100))
+(setf (size *player*) (gamekit:vec2 30 1))
+
+(defvar *ground* (make-instance 'block-item))
+(setf (src  *ground*) :blank)
+(setf (pos  *ground*) (gamekit:vec2 0 0))
+(setf (size *ground*) (gamekit:vec2 800 100))
+
+;; TODO: move these into a loop
 (defvar *block-a* (make-instance 'block-item))
 (setf (src  *block-a*) :block)
-(setf (pos  *block-a*) (gamekit:vec2 300 300))
-(setf (size *block-a*) (gamekit:vec2 30 30))
+(setf (pos  *block-a*) (gamekit:vec2 200 150))
+(setf (size *block-a*) (gamekit:vec2 60 30))
 
 (defvar *block-b* (make-instance 'block-item))
 (setf (src  *block-b*) :block)
-(setf (pos  *block-b*) (gamekit:vec2 400 400))
-(setf (size *block-b*) (gamekit:vec2 30 30))
+(setf (pos  *block-b*) (gamekit:vec2 300 200))
+(setf (size *block-b*) (gamekit:vec2 60 30))
+
+(defvar *block-c* (make-instance 'block-item))
+(setf (src  *block-c*) :block)
+(setf (pos  *block-c*) (gamekit:vec2 400 250))
+(setf (size *block-c*) (gamekit:vec2 60 30))
+
+(defvar *block-d* (make-instance 'block-item))
+(setf (src  *block-d*) :block)
+(setf (pos  *block-d*) (gamekit:vec2 550 250))
+(setf (size *block-d*) (gamekit:vec2 60 30))
+
+(defvar *blocks* (list *ground* *block-a* *block-b* *block-c* *block-d*))
 
 ; Game logic
 (defmethod gamekit:draw ((app :the-game))
@@ -118,28 +153,24 @@
       (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 430) :clouds)
 
       (case *move-dir* 
-        (1  (gamekit:draw-image *player-position* :player-right))
-        (-1 (gamekit:draw-image *player-position* :player-left))
-        (0  (gamekit:draw-image *player-position* :player-front)))
+        (1  (gamekit:draw-image (draw-pos *player*) :player-right))
+        (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
+        (0  (gamekit:draw-image (draw-pos *player*) :player-front)))
 
-      (gamekit:draw-image (pos *block-a*) (src *block-a*))
-      (gamekit:draw-image (pos *block-b*) (src *block-b*))
-
-      (gamekit:print-text (write-to-string *collides*) 10 590)
+      (loop
+          :for elem :in *blocks*
+          :do (gamekit:draw-image (pos elem) (src elem)))
     )
 
     (2 ())
   )
   
   (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
+
   (when *debug*
-    (gamekit:print-text (write-to-string *move-dir*) 10 590)
-    (gamekit:print-text (write-to-string (gamekit:x *player-position*)) 10 570)
-    (gamekit:print-text (write-to-string *transitioning*) 10 550)
-    (gamekit:print-text (write-to-string *alpha*) 10 530)
-    (gamekit:print-text (write-to-string *game-state*) 10 510)
-    (gamekit:print-text (write-to-string *grounded*) 10 490)
-    (gamekit:print-text (write-to-string *velocity*) 10 470))
+    (gamekit:print-text (format nil "Grounded: ~a"  *grounded*) 10 580)
+    (gamekit:print-text (format nil "Velocity: ~3a" *velocity*) 10 560)
+    (gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 10 540))
 )
 
 (defmethod gamekit:act ((app :the-game))
@@ -157,26 +188,27 @@
         (decf *alpha* 0.02))
       (if (<= *alpha* 0)
         (setf *transitioning* nil))
+        
+      (when (and (< *velocity* 0) (check-collision-all *player*))
+        (setf *grounded* t)
+        (setf *velocity* 0)
+        (incf (gamekit:x (pos *player*)) 0.2))
 
+      (when (not (check-collision-all *player*))
+        (setf *grounded* nil))
+        
       (when (not *grounded*)
        (decf *velocity* 0.2)
        (setf *speed* 2))
 
       (if *grounded*
         (setf *speed* 1))
-
-      (when (< (gamekit:y *player-position*) 100) 
-        (setf *velocity* 0)
-        (setf *grounded* t)
-        (setf (gamekit:y *player-position*) 100))
       
       (update-position)
       (if (< *clouds-one-pos-x* -800) (setf *clouds-one-pos-x* 0))
-      (decf *clouds-one-pos-x* 0.3)
+      (decf *clouds-one-pos-x* 0.2)
       (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 800))
-      (decf *clouds-two-pos-x* 0.3)
-
-      (setf *collides* (check-collision *block-a* *block-b*))
+      (decf *clouds-two-pos-x* 0.2)
     )
 
     (2 ())
