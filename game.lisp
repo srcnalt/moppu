@@ -50,6 +50,8 @@
 (defvar *transitioning* nil)
 (defvar *alpha* 0)
 
+(defvar *collides* nil)
+
 (defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
 ; Methods
@@ -63,6 +65,35 @@
 
 (defun moving-height (letter-height init-value)
   (+ letter-height (* 4 (sin (+ *letter-move* init-value)))))
+
+(defun check-collision (item-a item-b)
+  (
+    and 
+    (< (gamekit:x (pos item-a)) (+ (gamekit:x (pos item-b)) (gamekit:x (size item-b))))
+    (< (gamekit:y (pos item-a)) (+ (gamekit:y (pos item-b)) (gamekit:y (size item-b)))) 
+    (> (+ (gamekit:x (pos item-a)) (gamekit:x (size item-a))) (gamekit:x (pos item-b)))
+    (> (+ (gamekit:y (pos item-a)) (gamekit:y (size item-a))) (gamekit:y (pos item-b)))
+  )
+)
+
+; objects
+(defclass block-item ()
+  (
+    (src  :accessor src)
+    (pos  :accessor pos)
+    (size :accessor size)
+  )
+)
+
+(defvar *block-a* (make-instance 'block-item))
+(setf (src  *block-a*) :block)
+(setf (pos  *block-a*) (gamekit:vec2 300 300))
+(setf (size *block-a*) (gamekit:vec2 30 30))
+
+(defvar *block-b* (make-instance 'block-item))
+(setf (src  *block-b*) :block)
+(setf (pos  *block-b*) (gamekit:vec2 400 400))
+(setf (size *block-b*) (gamekit:vec2 30 30))
 
 ; Game logic
 (defmethod gamekit:draw ((app :the-game))
@@ -91,7 +122,10 @@
         (-1 (gamekit:draw-image *player-position* :player-left))
         (0  (gamekit:draw-image *player-position* :player-front)))
 
-      ;(gamekit:draw-image (gamekit:vec2 100 110) :block) ;100 - 130, 110, 140
+      (gamekit:draw-image (pos *block-a*) (src *block-a*))
+      (gamekit:draw-image (pos *block-b*) (src *block-b*))
+
+      (gamekit:print-text (write-to-string *collides*) 10 590)
     )
 
     (2 ())
@@ -141,11 +175,26 @@
       (decf *clouds-one-pos-x* 0.3)
       (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 800))
       (decf *clouds-two-pos-x* 0.3)
+
+      (setf *collides* (check-collision *block-a* *block-b*))
     )
 
     (2 ())
   )
 )
+
+; testing
+(gamekit:bind-button :right :repeating
+  (lambda () (incf (gamekit:x (pos *block-a*)) 2)))
+
+(gamekit:bind-button :left :repeating
+  (lambda () (decf (gamekit:x (pos *block-a*)) 2)))
+
+(gamekit:bind-button :up :repeating
+  (lambda () (incf (gamekit:y (pos *block-a*)) 2)))
+
+(gamekit:bind-button :down :repeating
+  (lambda () (decf (gamekit:y (pos *block-a*)) 2)))
 
 ; Input bindings
 (gamekit:bind-button :a :pressed
