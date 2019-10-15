@@ -4,29 +4,29 @@
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
   (:viewport-title "The Game")    ; window's title
-  (:draw-rate 60)
-  (:act-rate 60))
+  (:draw-rate 120)
+  (:act-rate 120))
 
 ; Load assets
 (gamekit:register-resource-package :keyword "assets/")
 
-(gamekit:define-image :player-right "moppy-right.png")
-(gamekit:define-image :player-left  "moppy-left.png")
-(gamekit:define-image :player-front "moppy-front.png")
+(gamekit:define-image :player-right "moppy-right.png" :use-nearest-interpolation t)
+(gamekit:define-image :player-left  "moppy-left.png" :use-nearest-interpolation t)
+(gamekit:define-image :player-front "moppy-front.png" :use-nearest-interpolation t)
 
-(gamekit:define-image :block "block.png")
-(gamekit:define-image :clouds "clouds.png")
-(gamekit:define-image :background "background.png")
+(gamekit:define-image :block "block.png" :use-nearest-interpolation t)
+(gamekit:define-image :clouds "clouds.png" :use-nearest-interpolation t)
+(gamekit:define-image :background "background.png" :use-nearest-interpolation t)
 
-(gamekit:define-image :letter-m "menu/letter-m.png")
-(gamekit:define-image :letter-o "menu/letter-o.png")
-(gamekit:define-image :letter-p "menu/letter-p.png")
-(gamekit:define-image :letter-u "menu/letter-u.png")
-(gamekit:define-image :under-text "menu/under-text.png")
-(gamekit:define-image :menu-bg "menu/menu-bg.png")
-(gamekit:define-image :menu-f-1 "menu/menu-flower-1.png")
-(gamekit:define-image :menu-f-2 "menu/menu-flower-2.png")
-(gamekit:define-image :menu-f-3 "menu/menu-flower-3.png")
+(gamekit:define-image :letter-m "menu/letter-m.png" :use-nearest-interpolation t)
+(gamekit:define-image :letter-o "menu/letter-o.png" :use-nearest-interpolation t)
+(gamekit:define-image :letter-p "menu/letter-p.png" :use-nearest-interpolation t)
+(gamekit:define-image :letter-u "menu/letter-u.png" :use-nearest-interpolation t)
+(gamekit:define-image :under-text "menu/under-text.png" :use-nearest-interpolation t)
+(gamekit:define-image :menu-bg "menu/menu-bg.png" :use-nearest-interpolation t)
+(gamekit:define-image :menu-f-1 "menu/menu-flower-1.png" :use-nearest-interpolation t)
+(gamekit:define-image :menu-f-2 "menu/menu-flower-2.png" :use-nearest-interpolation t)
+(gamekit:define-image :menu-f-3 "menu/menu-flower-3.png" :use-nearest-interpolation t)
 
 ; Start the game loop
 (gamekit:start :the-game)
@@ -38,7 +38,7 @@
 (defvar *move-dir* 0)
 (defvar *velocity* 0)
 (defvar *grounded* t)
-(defvar *speed* 2)
+(defvar *speed* 1)
 
 ;; scene vars
 (defvar *clouds-one-pos-x* 0)
@@ -62,7 +62,7 @@
   (/ (get-internal-real-time) internal-time-units-per-second))
 
 (defun moving-height (letter-height init-value)
-  (+ letter-height (* 5 (sin (+ *letter-move* init-value)))))
+  (+ letter-height (* 4 (sin (+ *letter-move* init-value)))))
 
 ; Game logic
 (defmethod gamekit:draw ((app :the-game))
@@ -124,7 +124,12 @@
       (if (<= *alpha* 0)
         (setf *transitioning* nil))
 
-      (if (not *grounded*) (decf *velocity* 0.2))
+      (when (not *grounded*)
+       (decf *velocity* 0.2)
+       (setf *speed* 2))
+
+      (if *grounded*
+        (setf *speed* 1))
 
       (when (< (gamekit:y *player-position*) 100) 
         (setf *velocity* 0)
@@ -164,7 +169,7 @@
       
       (1 
           (when *grounded* 
-            (setf *velocity* 5)
+            (setf *velocity* 7)
             (setf *grounded* nil))
       )
       
