@@ -6,5 +6,6 @@
 	:pathname "src/"
 	:serial t
 	:components (
-		(:file resources)
-		(:file main)))
+		(:file "packages")
+		(:file "resources")
+		(:file "main")))

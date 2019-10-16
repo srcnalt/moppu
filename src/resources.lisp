@@ -1,5 +1,4 @@
-(defpackage moppu (:use :cl))
-(in-package :moppu)
+(cl:in-package :moppu)
 
 (gamekit:register-resource-package
 	:keyword (asdf:system-relative-pathname :moppu "assets/"))

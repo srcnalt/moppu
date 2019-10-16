@@ -1,5 +1,4 @@
-(defpackage moppu (:use :cl))
-(in-package :moppu)
+(cl:in-package :moppu)
 
 ;; blah blah blah.
 ; Set window properties
@@ -12,7 +11,7 @@
   (:act-rate 120))
 
 ; Start the game loop
-(gamekit:start :moppu)
+(defun run() (gamekit:start :moppu))
 
 (defvar *debug* nil)
 
