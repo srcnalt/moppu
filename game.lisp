@@ -1,9 +1,9 @@
 ; Set window properties
-(gamekit:defgame :the-game () 
+(gamekit:defgame :moppu () 
   ()
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
-  (:viewport-title "The Game")    ; window's title
+  (:viewport-title "moppu")    ; window's title
   (:draw-rate 120)
   (:act-rate 120))
 
@@ -30,7 +30,7 @@
 (gamekit:define-image :menu-f-3 "menu/menu-flower-3.png" :use-nearest-interpolation t)
 
 ; Start the game loop
-(gamekit:start :the-game)
+(gamekit:start :moppu)
 
 (defvar *debug* nil)
 
@@ -131,7 +131,7 @@
 (defvar *blocks* (list *ground* *block-a* *block-b* *block-c* *block-d*))
 
 ; Game logic
-(defmethod gamekit:draw ((app :the-game))
+(defmethod gamekit:draw ((app :moppu))
   (case *game-state* 
     (0 
       (gamekit:draw-image (gamekit:vec2 0 0) :menu-bg)
@@ -173,7 +173,7 @@
     (gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 10 540))
 )
 
-(defmethod gamekit:act ((app :the-game))
+(defmethod gamekit:act ((app :moppu))
   (case *game-state*
     (0 
       (setf *letter-move* (* 2 (real-time-seconds)))
