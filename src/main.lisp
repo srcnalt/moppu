@@ -1,3 +1,8 @@
+(defpackage moppu
+  (:use :cl))
+(in-package :moppu)
+
+;; blah blah blah.
 ; Set window properties
 (gamekit:defgame :moppu ()
   ()
