@@ -7,7 +7,7 @@ platform:
 environment:
   global:
     GAMEKIT_SYSTEM_NAME: moppu
-    GAMEKIT_APPLICATION_PACKAGE: moppu-package
+    GAMEKIT_APPLICATION_PACKAGE: moppu
     GAMEKIT_APPLICATION_MAIN_CLASS: moppu
     GAMEKIT_ARTIFACT: $(GAMEKIT_SYSTEM_NAME)-x86-64-windows-$(APPVEYOR_REPO_TAG_NAME).zip
     GAMEKIT_BUILD_DIR: $(TMP)\$(GAMEKIT_SYSTEM_NAME)
@@ -27,10 +27,10 @@ install:
 
 build_script:
   - >
-    sh -c "$HOME/bin/lisp $HOME/bodge/scripts/build-gamekit-system.lisp
+    sh -c "$HOME/.bodge/bin/lisp build-gamekit-system
     %GAMEKIT_SYSTEM_NAME% %GAMEKIT_APPLICATION_PACKAGE% %GAMEKIT_APPLICATION_MAIN_CLASS%
-    $(cygpath -u '%APPVEYOR_BUILD_FOLDER%')
-    $(cygpath -u '%GAMEKIT_BUILD_DIR%')"
+    $(cygpath -m '%APPVEYOR_BUILD_FOLDER%')
+    $(cygpath -m '%GAMEKIT_BUILD_DIR%')"
   - mv %GAMEKIT_BUILD_DIR%\%GAMEKIT_SYSTEM_NAME%.zip %GAMEKIT_ARTIFACT%
 
 artifacts:
