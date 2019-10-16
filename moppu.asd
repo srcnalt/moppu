@@ -1,0 +1,9 @@
+(asdf:defsystem :moppu
+	:description "Moppu - Autumn Lisp Game Jam 2019 Entry"
+	:author "Sercan Altundas"
+	:license "GPLv3"
+	:depends-on (:trivial-gamekit)
+	:pathname "src/"
+	:serial t
+	:components ((:file main)
+				 (:file resources)))
