@@ -1,10 +1,8 @@
-(cl:in-package :moppu)
-
 (gamekit:register-resource-package
 	:keyword (asdf:system-relative-pathname :moppu "assets/"))
 
 ; (gamekit:define-font :retro "fonts/...")
-  
+
 (gamekit:define-image :player-right "moppy-right.png" 		 :use-nearest-interpolation t)
 (gamekit:define-image :player-left  "moppy-left.png" 		 :use-nearest-interpolation t)
 (gamekit:define-image :player-front "moppy-front.png" 	     :use-nearest-interpolation t)

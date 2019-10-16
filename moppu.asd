@@ -5,5 +5,6 @@
 	:depends-on (:trivial-gamekit)
 	:pathname "src/"
 	:serial t
-	:components ((:file main)
-				 (:file resources)))
+	:components (
+		(:file resources)
+		(:file main)))

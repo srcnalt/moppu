@@ -1,5 +1,5 @@
 ; Set window properties
-(gamekit:defgame :moppu () 
+(gamekit:defgame :moppu ()
   ()
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
@@ -44,9 +44,9 @@
 
 (defun check-collision (item-a item-b)
   (
-    and 
+    and
     (< (gamekit:x (pos item-a)) (+ (gamekit:x (pos item-b)) (gamekit:x (size item-b))))
-    (< (gamekit:y (pos item-a)) (+ (gamekit:y (pos item-b)) (gamekit:y (size item-b)))) 
+    (< (gamekit:y (pos item-a)) (+ (gamekit:y (pos item-b)) (gamekit:y (size item-b))))
     (> (+ (gamekit:x (pos item-a)) (gamekit:x (size item-a))) (gamekit:x (pos item-b)))
     (> (+ (gamekit:y (pos item-a)) (gamekit:y (size item-a))) (gamekit:y (pos item-b)))
   )
@@ -55,13 +55,13 @@
 (defun check-collision-all (item)
   (loop
     :with *collides* := nil
-    :for elem :in *blocks* 
+    :for elem :in *blocks*
     :when (check-collision item elem)
     :do (setf *collides* t)
     (return *collides*)))
 
 ; objects
-;; TODO: collision area vec4 
+;; TODO: collision area vec4
 (defclass block-item ()
   (
     (src  :accessor src)
@@ -110,8 +110,8 @@
 
 ; Game logic
 (defmethod gamekit:draw ((app :moppu))
-  (case *game-state* 
-    (0 
+  (case *game-state*
+    (0
       (gamekit:draw-image (gamekit:vec2 0 0) :menu-bg)
       (gamekit:draw-image (gamekit:vec2 310 520) :under-text)
       (gamekit:draw-image (gamekit:vec2 *letter-padding* (moving-height 400 0)) :letter-m)
@@ -119,7 +119,7 @@
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (moving-height 360 40)) :letter-p)
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (moving-height 360 10)) :letter-p)
       (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (moving-height 390 50)) :letter-u)
-      
+
       (gamekit:draw-image (gamekit:vec2 0 (moving-height -20 10)) :menu-f-1)
       (gamekit:draw-image (gamekit:vec2 0 (moving-height -30 20)) :menu-f-2)
       (gamekit:draw-image (gamekit:vec2 0 (moving-height -10 10)) :menu-f-3)
@@ -130,7 +130,7 @@
       (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 430) :clouds)
       (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 430) :clouds)
 
-      (case *move-dir* 
+      (case *move-dir*
         (1  (gamekit:draw-image (draw-pos *player*) :player-right))
         (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
         (0  (gamekit:draw-image (draw-pos *player*) :player-front)))
@@ -142,7 +142,7 @@
 
     (2 ())
   )
-  
+
   (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
@@ -153,20 +153,20 @@
 
 (defmethod gamekit:act ((app :moppu))
   (case *game-state*
-    (0 
+    (0
       (setf *letter-move* (* 2 (real-time-seconds)))
-      (if *transitioning* 
+      (if *transitioning*
         (incf *alpha* 0.02))
       (if (>= *alpha* 1)
         (setf *game-state* 1))
     )
-    
+
     (1
-      (if *transitioning* 
+      (if *transitioning*
         (decf *alpha* 0.02))
       (if (<= *alpha* 0)
         (setf *transitioning* nil))
-        
+
       (when (and (< *velocity* 0) (check-collision-all *player*))
         (setf *grounded* t)
         (setf *velocity* 0)
@@ -174,14 +174,14 @@
 
       (when (not (check-collision-all *player*))
         (setf *grounded* nil))
-        
+
       (when (not *grounded*)
        (decf *velocity* 0.2)
        (setf *speed* 2))
 
       (if *grounded*
         (setf *speed* 1))
-      
+
       (update-position)
       (if (< *clouds-one-pos-x* -800) (setf *clouds-one-pos-x* 0))
       (decf *clouds-one-pos-x* 0.2)
@@ -220,19 +220,19 @@
   (lambda () (setf *move-dir* 0)))
 
 (gamekit:bind-button :space :pressed
-  (lambda () 
-    (case *game-state* 
-      (0 
+  (lambda ()
+    (case *game-state*
+      (0
         (setf *transitioning* t)
       )
-      
-      (1 
-          (when *grounded* 
+
+      (1
+          (when *grounded*
             (setf *velocity* 7)
             (setf *grounded* nil))
       )
-      
+
       (2 ())
-    ) 
+    )
   )
 )
