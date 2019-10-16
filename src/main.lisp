@@ -1,5 +1,4 @@
-(defpackage moppu
-  (:use :cl))
+(defpackage moppu (:use :cl))
 (in-package :moppu)
 
 ;; blah blah blah.
