@@ -39,8 +39,9 @@
 ; Methods
 (defun update-position ()
   (setf (gamekit:x (rect *player*)) (+ (* *move-dir* *speed*) (gamekit:x (rect *player*))))
-  (incf (gamekit:y (rect *player*)) *velocity*))
-
+  (incf (gamekit:y (rect *player*)) *velocity*)
+  (when (< (gamekit:x (rect *player*)) 0) (setf (gamekit:x (rect *player*)) 0))
+  (when (> (gamekit:x (rect *player*)) (- 60 (gamekit:z (rect *player*)))) (setf (gamekit:x (rect *player*)) (- 80 (gamekit:z (rect *player*))))))
 
 (defun check-collision (item-a item-b)
   (setf collided

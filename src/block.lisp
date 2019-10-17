@@ -12,5 +12,6 @@
    (gamekit:vec2 (gamekit:x (rect object)) (gamekit:y (rect object))))
 
 (defmethod trigger-event ((object game-object))
-  (setf *triggered* t)
+  (setf *transitioning* t)
+  (setf *alpha* 0)
   nil)
