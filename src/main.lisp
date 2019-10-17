@@ -2,14 +2,20 @@
 
 ;; blah blah blah.
 ; Set window properties
-(gamekit:defgame :moppu ()()
+(gamekit:defgame moppu (gamekit.postproc:postproc)()
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
   (:viewport-title "moppu")    ; window's title
   (:draw-rate 120)
-  (:act-rate 120))
+  (:act-rate 120)
+  (:default-initargs :postproc-indirect-width 200
+                     :postproc-indirect-height 150))
 
-(gamekit:start :moppu)
+(defun run ()
+  (gamekit:start 'moppu))
+
+
+
 
 ; Start the game loop
 (defvar *debug* nil)
@@ -125,9 +131,9 @@
 (setf (coll *block-d*) (gamekit:vec4 0 0 0 20))
 
 (defvar *blocks* (list *ground* *block-a* *block-b* *block-c* *block-d*))
-
 ; Game logic
-(defmethod gamekit:draw ((app :moppu))
+(defmethod gamekit:draw ((app moppu))
+  (bodge-canvas:antialias-shapes nil)
   (case *game-state*
     (0
       (gamekit:draw-image (gamekit:vec2 0 0) :menu-bg)
@@ -173,7 +179,7 @@
         :do (draw-collider elem)))
 )
 
-(defmethod gamekit:act ((app :moppu))
+(defmethod gamekit:act ((app moppu))
   (case *game-state*
     (0
       (setf *letter-move* (* 2 (real-time-seconds)))
@@ -215,45 +221,51 @@
 )
 
 ; testing
-(gamekit:bind-button :right :repeating
-  (lambda () (incf (gamekit:x (rect *block-a*)) 2)))
+(defmethod post-initialize ((this moppu))
+  (gamekit:bind-button
+   :right :repeating
+   (lambda () (incf (gamekit:x (rect *block-a*)) 2)))
 
-(gamekit:bind-button :left :repeating
-  (lambda () (decf (gamekit:x (rect *block-a*)) 2)))
+  (gamekit:bind-button
+   :left :repeating
+   (lambda () (decf (gamekit:x (rect *block-a*)) 2)))
 
-(gamekit:bind-button :up :repeating
-  (lambda () (incf (gamekit:y (rect *block-a*)) 2)))
+  (gamekit:bind-button
+   :up :repeating
+   (lambda () (incf (gamekit:y (rect *block-a*)) 2)))
 
-(gamekit:bind-button :down :repeating
-  (lambda () (decf (gamekit:y (rect *block-a*)) 2)))
+  (gamekit:bind-button
+   :down :repeating
+   (lambda () (decf (gamekit:y (rect *block-a*)) 2)))
 
-; Input bindings
-(gamekit:bind-button :a :pressed
-  (lambda () (setf *move-dir* -1)))
+  ;; Input bindings
+  (gamekit:bind-button
+   :a :pressed
+   (lambda () (setf *move-dir* -1)))
 
-(gamekit:bind-button :a :released
-  (lambda () (setf *move-dir* 0)))
+  (gamekit:bind-button
+   :a :released
+   (lambda () (setf *move-dir* 0)))
 
-(gamekit:bind-button :d :pressed
-  (lambda () (setf *move-dir* 1)))
+  (gamekit:bind-button
+   :d :pressed
+   (lambda () (setf *move-dir* 1)))
 
-(gamekit:bind-button :d :released
-  (lambda () (setf *move-dir* 0)))
+  (gamekit:bind-button
+   :d :released
+   (lambda () (setf *move-dir* 0)))
 
-(gamekit:bind-button :o :released
-  (lambda () (setf *debug* (not *debug*))))
+  (gamekit:bind-button
+   :o :released
+   (lambda () (setf *debug* (not *debug*))))
 
-(gamekit:bind-button :space :pressed
-  (lambda ()
-    (case *game-state*
-      (0
-        (setf *transitioning* t)
-      )
+  (gamekit:bind-button
+   :space :pressed
+   (lambda ()
+     (case *game-state*
+       (0 (setf *transitioning* t))
 
-      (1
-          (when *grounded*
+       (1 (when *grounded*
             (setf *velocity* 7)
-            (setf *grounded* nil))
-      )
-
-      (2 ()))))
+            (setf *grounded* nil)))
+       (2 ())))))
