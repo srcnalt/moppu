@@ -3,19 +3,18 @@
 ;; blah blah blah.
 ; Set window properties
 (gamekit:defgame moppu (gamekit.postproc:postproc)()
+  (:canvas-height 60)
+  (:canvas-width 80)
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
   (:viewport-title "moppu")    ; window's title
   (:draw-rate 120)
   (:act-rate 120)
-  (:default-initargs :postproc-indirect-width 200
-                     :postproc-indirect-height 150))
+  (:default-initargs :postproc-indirect-width 800
+                     :postproc-indirect-height 600))
 
 (defun run ()
   (gamekit:start 'moppu))
-
-
-
 
 ; Start the game loop
 (defvar *debug* nil)
@@ -24,15 +23,13 @@
 (defvar *move-dir* 0)
 (defvar *velocity* 0)
 (defvar *grounded* t)
-(defvar *speed* 1)
+(defvar *speed* 0.1)
 
 ;; scene vars
 (defvar *clouds-one-pos-x* 0)
-(defvar *clouds-two-pos-x* 800)
+(defvar *clouds-two-pos-x* 80)
 
 ;; menu vars
-(defvar *letter-padding* 210)
-(defvar *letter-move* 0)
 (defvar *transitioning* nil)
 (defvar *alpha* 0)
 (defvar *triggered* nil)
@@ -44,8 +41,6 @@
   (setf (gamekit:x (rect *player*)) (+ (* *move-dir* *speed*) (gamekit:x (rect *player*))))
   (incf (gamekit:y (rect *player*)) *velocity*))
 
-(defun moving-height (letter-height init-value)
-  (+ letter-height (* 4 (sin (+ *letter-move* init-value)))))
 
 (defun check-collision (item-a item-b)
   (setf collided
@@ -83,31 +78,21 @@
 
 (defvar *player* (make-instance 'game-object))
 (setf (src  *player*) nil)
-(setf (rect *player*) (gamekit:vec4 100 100 50 60))
-(setf (coll *player*) (gamekit:vec4 10 10 60 -5))
+(setf (rect *player*) (gamekit:vec4 10 10 5 6))
+(setf (coll *player*) (gamekit:vec4 1 1 5 0))
 
 ; Game logic
 (defmethod gamekit:draw ((app moppu))
   (bodge-canvas:antialias-shapes nil)
   (case *game-state*
     (0
-      (gamekit:draw-image (gamekit:vec2 0 0) :menu-bg)
-      (gamekit:draw-image (gamekit:vec2 310 520) :under-text)
-      (gamekit:draw-image (gamekit:vec2 *letter-padding* (moving-height 400 0)) :letter-m)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 110) (moving-height 390 20)) :letter-o)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 180) (moving-height 360 40)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 250) (moving-height 360 10)) :letter-p)
-      (gamekit:draw-image (gamekit:vec2 (+ *letter-padding* 320) (moving-height 390 50)) :letter-u)
-
-      (gamekit:draw-image (gamekit:vec2 0 (moving-height -20 10)) :menu-f-1)
-      (gamekit:draw-image (gamekit:vec2 0 (moving-height -30 20)) :menu-f-2)
-      (gamekit:draw-image (gamekit:vec2 0 (moving-height -10 10)) :menu-f-3)
+      (draw-menu)
     )
 
     (1
       (gamekit:draw-image (gamekit:vec2 0 0) :background)
-      (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 430) :clouds)
-      (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 430) :clouds)
+      (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
+      (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
 
       (print-level *level-1-blocks*)
 
@@ -120,13 +105,13 @@
     (2 ())
   )
 
-  (gamekit:draw-rect (gamekit:vec2 0 0) 800 600 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
+  (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
-    (gamekit:print-text (format nil "Grounded: ~a"  *grounded*) 10 580)
-    (gamekit:print-text (format nil "Velocity: ~3a" *velocity*) 10 560)
-    (gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 10 540)
-    (gamekit:print-text (format nil "Triggerd: ~a" *triggered*) 10 520)
+    ;(gamekit:print-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 7))
+    ;(gamekit:print-text (format nil "Velocity: ~3a" *velocity*) (gamekit:vec2 1 56) :font (gamekit:make-font :sevenfour 7))
+    ;(gamekit:print-text (format nil "Triggerd: ~a" *triggered*) (gamekit:vec2 1 52) :font (gamekit:make-font :sevenfour 7))
+    ;(gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 1 54)
     (draw-collider *player*)
     (loop
         :for elem :in *level-1-blocks*
@@ -136,11 +121,7 @@
 (defmethod gamekit:act ((app moppu))
   (case *game-state*
     (0
-      (setf *letter-move* (* 2 (real-time-seconds)))
-      (if *transitioning*
-        (incf *alpha* 0.02))
-      (if (>= *alpha* 1)
-        (setf *game-state* 1))
+      (update-menu)
     )
 
     (1
@@ -157,42 +138,24 @@
         (setf *grounded* nil))
 
       (when (not *grounded*)
-       (decf *velocity* 0.2)
-       (setf *speed* 2))
+       (decf *velocity* 0.02)
+       (setf *speed* 0.2))
 
       (if *grounded*
-        (setf *speed* 1))
+        (setf *speed* 0.1))
 
       (update-position)
-      (if (< *clouds-one-pos-x* -800) (setf *clouds-one-pos-x* 0))
-      (decf *clouds-one-pos-x* 0.2)
-      (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 800))
-      (decf *clouds-two-pos-x* 0.2)
+      (if (< *clouds-one-pos-x* -80) (setf *clouds-one-pos-x* 0))
+      (decf *clouds-one-pos-x* 0.02)
+      (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 80))
+      (decf *clouds-two-pos-x* 0.02)
     )
 
     (2 ())
   )
 )
 
-; testing
-(defmethod post-initialize ((this moppu))
-  (gamekit:bind-button
-   :right :repeating
-   (lambda () (incf (gamekit:x (rect *block-a*)) 2)))
-
-  (gamekit:bind-button
-   :left :repeating
-   (lambda () (decf (gamekit:x (rect *block-a*)) 2)))
-
-  (gamekit:bind-button
-   :up :repeating
-   (lambda () (incf (gamekit:y (rect *block-a*)) 2)))
-
-  (gamekit:bind-button
-   :down :repeating
-   (lambda () (decf (gamekit:y (rect *block-a*)) 2)))
-
-  ;; Input bindings
+(defmethod gamekit:post-initialize ((this moppu))
   (gamekit:bind-button
    :a :pressed
    (lambda () (setf *move-dir* -1)))
@@ -220,6 +183,6 @@
        (0 (setf *transitioning* t))
 
        (1 (when *grounded*
-            (setf *velocity* 7)
+            (setf *velocity* 0.7)
             (setf *grounded* nil)))
        (2 ())))))

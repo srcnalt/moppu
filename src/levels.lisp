@@ -10,13 +10,13 @@
         (1
           (setf wall (make-instance 'game-object))
           (setf (src  wall) :block)
-          (setf (rect wall) (gamekit:vec4 (* j 50) (+ 100 (* (- *level-row* i 1) 50)) 50 50))
-          (setf (coll wall) (gamekit:vec4 0 0 0 40))
+          (setf (rect wall) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
+          (setf (coll wall) (gamekit:vec4 0 0 0 4))
           (push wall (cdr (last level-blocks))))
         (2
           (setf door (make-instance 'game-object))
           (setf (src  door) :door)
-          (setf (rect door) (gamekit:vec4 (* j 50) (+ 100 (* (- *level-row* i 1) 50)) 100 100))
+          (setf (rect door) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 10 10))
           (setf (coll door) (gamekit:vec4 0 0 0 0))
           (setf (is-trigger door) t)
           (push door (cdr (last level-blocks))))))))
@@ -27,9 +27,9 @@
     :do (gamekit:draw-image (draw-pos elem) (src elem))))
 
 (defvar *ground* (make-instance 'game-object))
-(setf (src  *ground*) :blank)
-(setf (rect *ground*) (gamekit:vec4 0 0 800 100))
-(setf (coll *ground*) (gamekit:vec4 0 0 0 0))
+(setf (src  *ground*) :ground)
+(setf (rect *ground*) (gamekit:vec4 0 0 80 14))
+(setf (coll *ground*) (gamekit:vec4 0 0 4 0))
 
 (defvar *level-1-blocks* (list *ground*))
 

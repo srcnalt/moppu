@@ -10,4 +10,5 @@
 		(:file "resources")
 		(:file "block")
 		(:file "levels")
+		(:file "menu")
 		(:file "main")))

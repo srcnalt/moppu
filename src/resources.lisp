@@ -3,18 +3,21 @@
 (gamekit:register-resource-package
 	:keyword (asdf:system-relative-pathname :moppu "assets/"))
 
-; (gamekit:define-font :retro "fonts/...")
+(gamekit:define-font :sevenfour "fonts/SevenFour.ttf")
 
+; Player
 (gamekit:define-image :player-right "moppy-right.png" 		 		:use-nearest-interpolation t)
 (gamekit:define-image :player-left  "moppy-left.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :player-front "moppy-front.png" 	     	:use-nearest-interpolation t)
 
+; Level
 (gamekit:define-image :block 				"block.png" 			 				:use-nearest-interpolation t)
 (gamekit:define-image :door 				"door.png" 			 				  :use-nearest-interpolation t)
 (gamekit:define-image :clouds 			"clouds.png" 			 				:use-nearest-interpolation t)
 (gamekit:define-image :background 	"background.png" 		 			:use-nearest-interpolation t)
-(gamekit:define-image :blank 				"blank.png" 		 	 				:use-nearest-interpolation t)
+(gamekit:define-image :ground			 	"ground.png" 		 					:use-nearest-interpolation t)
 
+; Menu
 (gamekit:define-image :letter-m 		"menu/letter-m.png" 	 		:use-nearest-interpolation t)
 (gamekit:define-image :letter-o 		"menu/letter-o.png" 	 		:use-nearest-interpolation t)
 (gamekit:define-image :letter-p 		"menu/letter-p.png" 	 		:use-nearest-interpolation t)
