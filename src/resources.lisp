@@ -10,6 +10,7 @@
 (gamekit:define-image :player-front "moppy-front.png" 	     	:use-nearest-interpolation t)
 
 (gamekit:define-image :block 				"block.png" 			 				:use-nearest-interpolation t)
+(gamekit:define-image :door 				"door.png" 			 				  :use-nearest-interpolation t)
 (gamekit:define-image :clouds 			"clouds.png" 			 				:use-nearest-interpolation t)
 (gamekit:define-image :background 	"background.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :blank 				"blank.png" 		 	 				:use-nearest-interpolation t)

@@ -8,4 +8,6 @@
 	:components (
 		(:file "packages")
 		(:file "resources")
+		(:file "block")
+		(:file "levels")
 		(:file "main")))
