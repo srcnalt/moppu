@@ -11,8 +11,6 @@
   (:act-rate 120))
 
 ; Start the game loop
-(defun run() (gamekit:start :moppu))
-
 (defvar *debug* nil)
 
 ; player vars
@@ -38,30 +36,27 @@
   (setf (gamekit:x (pos *player*)) (+ (* *move-dir* *speed*) (gamekit:x (pos *player*))))
   (incf (gamekit:y (pos *player*)) *velocity*))
 
-(defun real-time-seconds ()
-  "Return seconds since certain point of time"
-  (/ (get-internal-real-time) internal-time-units-per-second))
-
 (defun moving-height (letter-height init-value)
   (+ letter-height (* 4 (sin (+ *letter-move* init-value)))))
 
-(defun check-collision (item-a item-b)
-  (
-    and
-    (< (gamekit:x (pos item-a)) (+ (gamekit:x (pos item-b)) (gamekit:x (size item-b))))
-    (< (gamekit:y (pos item-a)) (+ (gamekit:y (pos item-b)) (gamekit:y (size item-b))))
-    (> (+ (gamekit:x (pos item-a)) (gamekit:x (size item-a))) (gamekit:x (pos item-b)))
-    (> (+ (gamekit:y (pos item-a)) (gamekit:y (size item-a))) (gamekit:y (pos item-b)))
-  )
-)
+  (defun check-collision (item-a item-b)
+    (and
+      (< (gamekit:x (pos item-a)) (+ (gamekit:x (pos item-b)) (gamekit:x (size item-b))))
+      (< (gamekit:y (pos item-a)) (+ (gamekit:y (pos item-b)) (gamekit:y (size item-b))))
+      (> (+ (gamekit:x (pos item-a)) (gamekit:x (size item-a))) (gamekit:x (pos item-b)))
+      (> (+ (gamekit:y (pos item-a)) (gamekit:y (size item-a))) (gamekit:y (pos item-b)))))
 
-(defun check-collision-all (item)
-  (loop
-    :with *collides* := nil
-    :for elem :in *blocks*
-    :when (check-collision item elem)
-    :do (setf *collides* t)
-    (return *collides*)))
+  (defun check-collision-all (item)
+    (loop
+      :with *collides* := nil
+      :for elem :in *blocks*
+      :when (check-collision item elem)
+      :do (setf *collides* t)
+      (return *collides*)))
+
+  (defun real-time-seconds ()
+    "Return seconds since certain point of time"
+    (/ (get-internal-real-time) internal-time-units-per-second))
 
 ; objects
 ;; TODO: collision area vec4
@@ -196,46 +191,46 @@
   )
 )
 
-; testing
-(gamekit:bind-button :right :repeating
-  (lambda () (incf (gamekit:x (pos *block-a*)) 2)))
+(defun run()
+  (gamekit:start :moppu)
 
-(gamekit:bind-button :left :repeating
-  (lambda () (decf (gamekit:x (pos *block-a*)) 2)))
+  ; testing
+  (gamekit:bind-button :right :repeating
+    (lambda () (incf (gamekit:x (pos *block-a*)) 2)))
 
-(gamekit:bind-button :up :repeating
-  (lambda () (incf (gamekit:y (pos *block-a*)) 2)))
+  (gamekit:bind-button :left :repeating
+    (lambda () (decf (gamekit:x (pos *block-a*)) 2)))
 
-(gamekit:bind-button :down :repeating
-  (lambda () (decf (gamekit:y (pos *block-a*)) 2)))
+  (gamekit:bind-button :up :repeating
+    (lambda () (incf (gamekit:y (pos *block-a*)) 2)))
 
-; Input bindings
-(gamekit:bind-button :a :pressed
-  (lambda () (setf *move-dir* -1)))
+  (gamekit:bind-button :down :repeating
+    (lambda () (decf (gamekit:y (pos *block-a*)) 2)))
 
-(gamekit:bind-button :a :released
-  (lambda () (setf *move-dir* 0)))
+  ; Input bindings
+  (gamekit:bind-button :a :pressed
+    (lambda () (setf *move-dir* -1)))
 
-(gamekit:bind-button :d :pressed
-  (lambda () (setf *move-dir* 1)))
+  (gamekit:bind-button :a :released
+    (lambda () (setf *move-dir* 0)))
 
-(gamekit:bind-button :d :released
-  (lambda () (setf *move-dir* 0)))
+  (gamekit:bind-button :d :pressed
+    (lambda () (setf *move-dir* 1)))
 
-(gamekit:bind-button :space :pressed
-  (lambda ()
-    (case *game-state*
-      (0
-        (setf *transitioning* t)
-      )
+  (gamekit:bind-button :d :released
+    (lambda () (setf *move-dir* 0)))
 
-      (1
-          (when *grounded*
-            (setf *velocity* 7)
-            (setf *grounded* nil))
-      )
+  (gamekit:bind-button :space :pressed
+    (lambda ()
+      (case *game-state*
+        (0
+          (setf *transitioning* t)
+        )
 
-      (2 ())
-    )
-  )
-)
+        (1
+            (when *grounded*
+              (setf *velocity* 7)
+              (setf *grounded* nil))
+        )
+
+        (2 ())))))
