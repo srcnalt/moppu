@@ -29,6 +29,7 @@
 (defvar *letter-move* 0)
 (defvar *transitioning* nil)
 (defvar *alpha* 0)
+(defvar *triggered* nil)
 
 (defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
@@ -41,28 +42,20 @@
   (+ letter-height (* 4 (sin (+ *letter-move* init-value)))))
 
 (defun check-collision (item-a item-b)
-  (and
-    ; x y w h
-    ; l r t b
-    ; a.x  < b.xw  ->  a.x+l  < b.x+w-r
-    ; a.xw > b.x   ->  a.x+w-r > b.x+l
-    ; a.y  < b.yh  ->  a.y+b  < b.y+h-t
-    ; a.yh > b.y   ->  a.y+h-t > b.y+b
-
-    ; a.(rect x) + (coll x)     < b.(rect x + z) - (coll y)
-    ; a.(rect x + z) - (coll y) > b.(rect x) + (coll x)
-    ; a.(rect y) + (coll w)     < b.(rect y + w) - (coll z)
-    ; a.(rect y + w) - (coll z) > b.(rect y) + (coll w)
-
-    (< (+ (gamekit:x (rect item-a)) (gamekit:x (coll item-a))) (- (+ (gamekit:x (rect item-b)) (gamekit:z (rect item-b))) (gamekit:y (coll item-b))))
-    (> (- (+ (gamekit:x (rect item-a)) (gamekit:z (rect item-a))) (gamekit:y (coll item-a))) (+ (gamekit:x (rect item-b)) (gamekit:x (coll item-b))))
-    (< (+ (gamekit:y (rect item-a)) (gamekit:w (coll item-a))) (- (+ (gamekit:y (rect item-b)) (gamekit:w (rect item-b))) (gamekit:z (coll item-b))))
-    (> (- (+ (gamekit:y (rect item-a)) (gamekit:w (rect item-a))) (gamekit:z (coll item-a))) (+ (gamekit:y (rect item-b)) (gamekit:w (coll item-b))))))
+  (setf collided
+    (and
+      (< (+ (gamekit:x (rect item-a)) (gamekit:x (coll item-a))) (- (+ (gamekit:x (rect item-b)) (gamekit:z (rect item-b))) (gamekit:y (coll item-b))))
+      (> (- (+ (gamekit:x (rect item-a)) (gamekit:z (rect item-a))) (gamekit:y (coll item-a))) (+ (gamekit:x (rect item-b)) (gamekit:x (coll item-b))))
+      (< (+ (gamekit:y (rect item-a)) (gamekit:w (coll item-a))) (- (+ (gamekit:y (rect item-b)) (gamekit:w (rect item-b))) (gamekit:z (coll item-b))))
+      (> (- (+ (gamekit:y (rect item-a)) (gamekit:w (rect item-a))) (gamekit:z (coll item-a))) (+ (gamekit:y (rect item-b)) (gamekit:w (coll item-b))))))
+  (if (and collided (is-trigger item-b))
+    (trigger-event item-b)
+    collided))
 
 (defun check-collision-all (item)
   (loop
     :with *collides* := nil
-    :for elem :in *blocks*
+    :for elem :in *level-1-blocks*
     :when (check-collision item elem)
     :do (setf *collides* t)
     (return *collides*)))
@@ -72,59 +65,20 @@
   (/ (get-internal-real-time) internal-time-units-per-second))
 
 (defun draw-collider (elem)
+  (if (is-trigger elem) (setf color (gamekit:vec4 0 0 1 0.5)) (setf color (gamekit:vec4 1 0 0 0.5)))
   (gamekit:draw-rect
   (gamekit:vec2 (+ (gamekit:x (rect elem)) (gamekit:x (coll elem))) (+ (gamekit:y (rect elem)) (gamekit:w (coll elem))))
   (- (gamekit:z (rect elem)) (gamekit:x (coll elem)) (gamekit:y (coll elem)))
   (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
-  :fill-paint (gamekit:vec4 1 0 0 0.5)))
+  :fill-paint color))
 
 ; objects
 ;; TODO: collision area vec4
-(defclass block-item ()
-  (
-    (src  :accessor src)
-    (rect :accessor rect)
-    (coll :accessor coll)
-    (draw-pos :reader draw-pos)
-  )
-)
 
-(defmethod draw-pos ((object block-item))
-   (gamekit:vec2 (gamekit:x (rect object)) (gamekit:y (rect object)))
-)
-
-(defvar *player* (make-instance 'block-item))
+(defvar *player* (make-instance 'game-object))
 (setf (src  *player*) nil)
-(setf (rect *player*) (gamekit:vec4 200 300 50 60))
+(setf (rect *player*) (gamekit:vec4 100 100 50 60))
 (setf (coll *player*) (gamekit:vec4 10 10 60 -5))
-
-(defvar *ground* (make-instance 'block-item))
-(setf (src  *ground*) :blank)
-(setf (rect *ground*) (gamekit:vec4 0 0 800 100))
-(setf (coll *ground*) (gamekit:vec4 0 0 0 0))
-
-;; TODO: move these into a loop
-(defvar *block-a* (make-instance 'block-item))
-(setf (src  *block-a*) :block)
-(setf (rect *block-a*) (gamekit:vec4 200 150 60 30))
-(setf (coll *block-a*) (gamekit:vec4 0 0 0 20))
-
-(defvar *block-b* (make-instance 'block-item))
-(setf (src  *block-b*) :block)
-(setf (rect *block-b*) (gamekit:vec4 300 200 60 30))
-(setf (coll *block-b*) (gamekit:vec4 0 0 0 20))
-
-(defvar *block-c* (make-instance 'block-item))
-(setf (src  *block-c*) :block)
-(setf (rect *block-c*) (gamekit:vec4 300 400 60 30))
-(setf (coll *block-c*) (gamekit:vec4 0 0 0 20))
-
-(defvar *block-d* (make-instance 'block-item))
-(setf (src  *block-d*) :block)
-(setf (rect *block-d*) (gamekit:vec4 450 300 60 30))
-(setf (coll *block-d*) (gamekit:vec4 0 0 0 20))
-
-(defvar *blocks* (list *ground* *block-a* *block-b* *block-c* *block-d*))
 
 ; Game logic
 (defmethod gamekit:draw ((app :moppu))
@@ -148,9 +102,7 @@
       (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 430) :clouds)
       (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 430) :clouds)
 
-      (loop
-          :for elem :in *blocks*
-          :do (gamekit:draw-image (draw-pos elem) (src elem)))
+      (print-level *level-1-blocks*)
 
       (case *move-dir*
         (1  (gamekit:draw-image (draw-pos *player*) :player-right))
@@ -167,9 +119,10 @@
     (gamekit:print-text (format nil "Grounded: ~a"  *grounded*) 10 580)
     (gamekit:print-text (format nil "Velocity: ~3a" *velocity*) 10 560)
     (gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 10 540)
+    (gamekit:print-text (format nil "Triggerd: ~a" *triggered*) 10 520)
     (draw-collider *player*)
     (loop
-        :for elem :in *blocks*
+        :for elem :in *level-1-blocks*
         :do (draw-collider elem)))
 )
 
@@ -213,19 +166,6 @@
     (2 ())
   )
 )
-
-; testing
-(gamekit:bind-button :right :repeating
-  (lambda () (incf (gamekit:x (rect *block-a*)) 2)))
-
-(gamekit:bind-button :left :repeating
-  (lambda () (decf (gamekit:x (rect *block-a*)) 2)))
-
-(gamekit:bind-button :up :repeating
-  (lambda () (incf (gamekit:y (rect *block-a*)) 2)))
-
-(gamekit:bind-button :down :repeating
-  (lambda () (decf (gamekit:y (rect *block-a*)) 2)))
 
 ; Input bindings
 (gamekit:bind-button :a :pressed
