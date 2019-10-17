@@ -2,13 +2,14 @@
 
 ;; blah blah blah.
 ; Set window properties
-(gamekit:defgame :moppu ()
-  ()
+(gamekit:defgame :moppu ()()
   (:viewport-width 800)           ; window's width
   (:viewport-height 600)          ; window's height
   (:viewport-title "moppu")    ; window's title
   (:draw-rate 120)
   (:act-rate 120))
+
+(gamekit:start :moppu)
 
 ; Start the game loop
 (defvar *debug* nil)
@@ -191,46 +192,43 @@
   )
 )
 
-(defun run()
-  (gamekit:start :moppu)
+; testing
+(gamekit:bind-button :right :repeating
+  (lambda () (incf (gamekit:x (pos *block-a*)) 2)))
 
-  ; testing
-  (gamekit:bind-button :right :repeating
-    (lambda () (incf (gamekit:x (pos *block-a*)) 2)))
+(gamekit:bind-button :left :repeating
+  (lambda () (decf (gamekit:x (pos *block-a*)) 2)))
 
-  (gamekit:bind-button :left :repeating
-    (lambda () (decf (gamekit:x (pos *block-a*)) 2)))
+(gamekit:bind-button :up :repeating
+  (lambda () (incf (gamekit:y (pos *block-a*)) 2)))
 
-  (gamekit:bind-button :up :repeating
-    (lambda () (incf (gamekit:y (pos *block-a*)) 2)))
+(gamekit:bind-button :down :repeating
+  (lambda () (decf (gamekit:y (pos *block-a*)) 2)))
 
-  (gamekit:bind-button :down :repeating
-    (lambda () (decf (gamekit:y (pos *block-a*)) 2)))
+; Input bindings
+(gamekit:bind-button :a :pressed
+  (lambda () (setf *move-dir* -1)))
 
-  ; Input bindings
-  (gamekit:bind-button :a :pressed
-    (lambda () (setf *move-dir* -1)))
+(gamekit:bind-button :a :released
+  (lambda () (setf *move-dir* 0)))
 
-  (gamekit:bind-button :a :released
-    (lambda () (setf *move-dir* 0)))
+(gamekit:bind-button :d :pressed
+  (lambda () (setf *move-dir* 1)))
 
-  (gamekit:bind-button :d :pressed
-    (lambda () (setf *move-dir* 1)))
+(gamekit:bind-button :d :released
+  (lambda () (setf *move-dir* 0)))
 
-  (gamekit:bind-button :d :released
-    (lambda () (setf *move-dir* 0)))
+(gamekit:bind-button :space :pressed
+  (lambda ()
+    (case *game-state*
+      (0
+        (setf *transitioning* t)
+      )
 
-  (gamekit:bind-button :space :pressed
-    (lambda ()
-      (case *game-state*
-        (0
-          (setf *transitioning* t)
-        )
+      (1
+          (when *grounded*
+            (setf *velocity* 7)
+            (setf *grounded* nil))
+      )
 
-        (1
-            (when *grounded*
-              (setf *velocity* 7)
-              (setf *grounded* nil))
-        )
-
-        (2 ())))))
+      (2 ()))))
