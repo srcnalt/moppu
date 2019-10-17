@@ -1,0 +1,57 @@
+language: common-lisp
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - zip
+
+env:
+  global:
+  - GAMEKIT_SYSTEM_NAME: moppu
+  - GAMEKIT_APPLICATION_PACKAGE: moppu
+  - GAMEKIT_APPLICATION_MAIN_CLASS: moppu
+  - PATH: ~/.bodge/bin/:$PATH
+  - GAMEKIT_TARGET_PACKAGE: $GAMEKIT_SYSTEM_NAME-x86-64-$TRAVIS_OS_NAME-$TRAVIS_BRANCH.zip
+  - GAMEKIT_BUILD_DIR: /tmp/$GAMEKIT_SYSTEM_NAME
+  - secure: "uoF2WDF7HrrU5U32u4512B/p1g+z366rKenMbwPDpWQ0EMxNhK6qF+R1TQjezbSvmme/ifKsh5CR4Q2UwGSicyAbKlMKG+wMZyLV5+6nq8lOx2I5khoR7v54GzSJl4vVnaCXfmavnhUiX6LGi3moiCTTqwm+CXr5h2JErD9QEinK7lG/8tqHD0hwO0gmeVxO4kDR/El+CMGwkbb91MDB+KbmDeBknkmwYflvmJ+yXNF8JwlnCNJijy42kaRCWFNAgoFZh+IPxLXePiRqqlsT9/SFA4cVMPSSztZjKJPYp/+t33POLwRLM2r99k2rCsI80KfSLo1D++4jOD+T7SDhC118XBfRE8KgC1IH1i52MWVnDOtxzf0R+fRb2jK8rIjS2Si5gLIhzDq6lrrFqFM0HQ7XK1gfqGMf4IVL5Y6dl831uLYfi6eEGRFr/bikGWV1FF9wz+mG3SpDwzUYveyRaxdngLDIaDiAhQYerSUjnpHEPtnqAR17mY6ErpNkUX8Q82uEYlWSDQaevlWoyD9exvtFtw77kCELtIxYm6SfVtOGFGZoA8BcabcjAHdvdCNn2Dd+5khHlC7yUArnMzMB9MsAe5lzjLTfTsVSWWkuw/xETHHuX4nksF1xpGrWTH95YTtu2/Suqggl5NBvuSaaXrgdEthtpmB7tvTUkzCqx4Q="
+
+branches:
+  only:
+    - "/^v\\d+(\\.\\d+)+$/"
+
+cache:
+  directories:
+    - $HOME/Library/Caches/Homebrew
+
+os:
+  - linux
+  - osx
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install git-lfs; fi
+  - curl -L http://bodge.borodust.org/files/install.sh | sh
+  - git lfs install && git lfs pull
+  - lisp install-testing-dist
+
+script:
+  - >
+    lisp build-gamekit-system
+    $GAMEKIT_SYSTEM_NAME $GAMEKIT_APPLICATION_PACKAGE $GAMEKIT_APPLICATION_MAIN_CLASS
+    $TRAVIS_BUILD_DIR
+    $GAMEKIT_BUILD_DIR
+
+before_deploy:
+  - mv "$GAMEKIT_BUILD_DIR/$GAMEKIT_SYSTEM_NAME.zip" $GAMEKIT_TARGET_PACKAGE
+
+deploy:
+  provider: releases
+  api-key: $GITHUB_TOKEN
+  file: $GAMEKIT_TARGET_PACKAGE
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true

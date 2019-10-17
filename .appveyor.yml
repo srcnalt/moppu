@@ -44,7 +44,7 @@ deploy:
   tag: $(APPVEYOR_REPO_TAG_NAME)
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   auth_token:
-    secure: "tmQ/60JZBBCPZ8bahf5tp7meSUbUkHU68cssNPaoTN1+abcn+3a9G4pCwP957Dys"
+    secure: Z5XWjDOBlCrmfz3SQAjnLKtdgI5B2b/owJhRPNWYGrI+qwVNbBc4cZiroBZReWP7
   artifact: release_archive
   force_update: true
   draft: false
