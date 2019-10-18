@@ -30,9 +30,8 @@
 (defvar *clouds-two-pos-x* 80)
 
 ;; menu vars
-(defvar *transitioning* nil)
-(defvar *alpha* 0)
 (defvar *triggered* nil)
+(defvar *map-blocks* nil)
 
 (defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
@@ -57,7 +56,7 @@
 (defun check-collision-all (item)
   (loop
     :with *collides* := nil
-    :for elem :in *level-1-blocks*
+    :for elem :in (nth (- *game-state* 1) *levels*)
     :when (check-collision item elem)
     :do (setf *collides* t)
     (return *collides*)))
@@ -74,8 +73,45 @@
   (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
   :fill-paint color))
 
-; objects
-;; TODO: collision area vec4
+(defvar *alpha* 0)
+(defvar *transition-state* 0)
+(defun transition ()
+  (case *transition-state*
+    (1  ;darken
+      (incf *alpha* 0.02)
+      (when (>= *alpha* 1)
+        (incf *transition-state*)))
+    (2
+      (setf
+        (gamekit:x (rect *player*)) 10
+        (gamekit:y (rect *player*)) 10)
+      (incf *game-state*)
+      (incf *transition-state*))
+    (3  ;brighten
+      (decf *alpha* 0.02)
+      (when (<= *alpha* 0)
+        (setf *transition-state* 0)))))
+
+(defun update-game()
+  (when (and (< *velocity* 0) (check-collision-all *player*))
+    (setf *grounded* t)
+    (setf *velocity* 0))
+
+  (when (not (check-collision-all *player*))
+    (setf *grounded* nil))
+
+  (when (not *grounded*)
+   (decf *velocity* 0.02)
+   (setf *speed* 0.2))
+
+  (if *grounded*
+    (setf *speed* 0.1))
+
+  (update-position)
+  (if (< *clouds-one-pos-x* -80) (setf *clouds-one-pos-x* 0))
+  (decf *clouds-one-pos-x* 0.02)
+  (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 80))
+  (decf *clouds-two-pos-x* 0.02))
 
 (defvar *player* (make-instance 'game-object))
 (setf (src  *player*) nil)
@@ -95,7 +131,7 @@
       (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
       (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
 
-      (print-level *level-1-blocks*)
+      (print-level (nth (- *game-state* 1) *levels*))
 
       (case *move-dir*
         (1  (gamekit:draw-image (draw-pos *player*) :player-right))
@@ -103,7 +139,17 @@
         (0  (gamekit:draw-image (draw-pos *player*) :player-front)))
     )
 
-    (2 ())
+    (2
+      (gamekit:draw-image (gamekit:vec2 0 0) :background)
+      (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
+      (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
+
+      (print-level (nth (- *game-state* 1) *levels*))
+
+      (case *move-dir*
+        (1  (gamekit:draw-image (draw-pos *player*) :player-right))
+        (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
+        (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
   )
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
@@ -111,50 +157,25 @@
   (when *debug*
     ;(gamekit:print-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 7))
     ;(gamekit:print-text (format nil "Velocity: ~3a" *velocity*) (gamekit:vec2 1 56) :font (gamekit:make-font :sevenfour 7))
-    ;(gamekit:print-text (format nil "Triggerd: ~a" *triggered*) (gamekit:vec2 1 52) :font (gamekit:make-font :sevenfour 7))
+    (gamekit:print-text (format nil "~a" *triggered*) 1 52)
     ;(gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 1 54)
     (draw-collider *player*)
     (loop
-        :for elem :in *level-1-blocks*
+        :for elem :in (nth (- *game-state* 1) *levels*)
         :do (draw-collider elem)))
 )
 
 (defmethod gamekit:act ((app moppu))
+  (transition)
   (case *game-state*
     (0
-      (update-menu)
-    )
-
+      (update-menu))
     (1
-      (if *transitioning*
-        (decf *alpha* 0.02))
-      (if (<= *alpha* 0)
-        (setf *transitioning* nil))
-
-      (when (and (< *velocity* 0) (check-collision-all *player*))
-        (setf *grounded* t)
-        (setf *velocity* 0))
-
-      (when (not (check-collision-all *player*))
-        (setf *grounded* nil))
-
-      (when (not *grounded*)
-       (decf *velocity* 0.02)
-       (setf *speed* 0.2))
-
-      (if *grounded*
-        (setf *speed* 0.1))
-
-      (update-position)
-      (if (< *clouds-one-pos-x* -80) (setf *clouds-one-pos-x* 0))
-      (decf *clouds-one-pos-x* 0.02)
-      (if (< *clouds-two-pos-x* 0) (setf *clouds-two-pos-x* 80))
-      (decf *clouds-two-pos-x* 0.02)
-    )
-
-    (2 ())
-  )
-)
+      (update-game))
+    (2
+      (update-game))
+    (3
+      (setf *game-state* 0))))
 
 (defmethod gamekit:post-initialize ((this moppu))
   (gamekit:bind-button
@@ -181,9 +202,11 @@
    :space :pressed
    (lambda ()
      (case *game-state*
-       (0 (setf *transitioning* t))
+       (0 (setf *transition-state* 1))
 
        (1 (when *grounded*
             (setf *velocity* 0.7)
             (setf *grounded* nil)))
-       (2 ())))))
+       (2 (when *grounded*
+            (setf *velocity* 0.7)
+            (setf *grounded* nil)))))))

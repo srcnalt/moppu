@@ -20,8 +20,4 @@
   (gamekit:draw-image (gamekit:vec2 0 (moving-height -1 1)) :menu-f-3))
 
 (defun update-menu ()
-  (setf *letter-move* (* 2 (real-time-seconds)))
-  (if *transitioning*
-    (incf *alpha* 0.02))
-  (if (>= *alpha* 1)
-    (setf *game-state* 1)))
+  (setf *letter-move* (* 2 (real-time-seconds))))

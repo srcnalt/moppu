@@ -31,18 +31,39 @@
 (setf (rect *ground*) (gamekit:vec4 0 0 80 14))
 (setf (coll *ground*) (gamekit:vec4 0 0 4 0))
 
+
+;;; Level 1
 (defvar *level-1-blocks* (list *ground*))
 
 (defparameter *level-1* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0)
-  (0 0 0 0 0 0 1 1 1 1 0 0 1 1 1 1)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0))))
+  (0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
 (load-level *level-1* *level-1-blocks*)
+
+;;; Level 2
+(defvar *level-2-blocks* (list *ground*))
+
+(defparameter *level-2* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1)
+  (0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0)
+  (0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0)
+  (0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
+
+(load-level *level-2* *level-2-blocks*)
+
+(defvar *levels* (list *level-1-blocks* *level-2-blocks*))
