@@ -123,9 +123,7 @@
   (bodge-canvas:antialias-shapes nil)
   (case *game-state*
     (0
-      (draw-menu)
-    )
-
+      (draw-menu))
     (1
       (gamekit:draw-image (gamekit:vec2 0 0) :background)
       (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
@@ -136,9 +134,7 @@
       (case *move-dir*
         (1  (gamekit:draw-image (draw-pos *player*) :player-right))
         (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
-        (0  (gamekit:draw-image (draw-pos *player*) :player-front)))
-    )
-
+        (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
     (2
       (gamekit:draw-image (gamekit:vec2 0 0) :background)
       (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
@@ -155,7 +151,7 @@
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
-    ;(gamekit:print-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 7))
+    (gamekit:draw-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 1))
     ;(gamekit:print-text (format nil "Velocity: ~3a" *velocity*) (gamekit:vec2 1 56) :font (gamekit:make-font :sevenfour 7))
     (gamekit:print-text (format nil "~a" *triggered*) 1 52)
     ;(gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 1 54)
@@ -202,7 +198,7 @@
    :space :pressed
    (lambda ()
      (case *game-state*
-       (0 (setf *transition-state* 1))
+       (0 (setf *menu-start-pressed* t))
 
        (1 (when *grounded*
             (setf *velocity* 0.7)
