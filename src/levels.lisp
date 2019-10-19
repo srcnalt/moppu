@@ -87,7 +87,7 @@
   (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
 
   (loop
-    :for elem :in (nth (- *game-state* 1) *levels*)
+    :for elem :in (nth (- *game-state* 2) *levels*)
     :do (gamekit:draw-image (draw-pos elem) (src elem)))
 
   (when *locked* (gamekit:draw-image (draw-pos *player*) :player-cry))
@@ -97,7 +97,7 @@
       (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
       (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
 
-  (when (and (= *game-state* 8) *game-completed*)
+  (when (and (= *game-state* 9) *game-completed*)
     (gamekit:draw-image (gamekit:vec2 0 25) *end-message*)
     (incf *end-wait* 0.01)
     (when (and (> *end-wait* 5) (= *transition-state* 0))
@@ -123,7 +123,7 @@
 
 (defmethod collect-flower ((object game-object))
   (push object *collected-flowers*)
-  (setf (nth (- *game-state* 1) *levels*) (remove object (nth (- *game-state* 1) *levels*)))
+  (setf (nth (- *game-state* 2) *levels*) (remove object (nth (- *game-state* 2) *levels*)))
   nil)
 
 (defmethod select-message ((object game-object))
@@ -242,7 +242,7 @@
   (2 0 0 0 4 0 0 0 0 6 0 4 0 0 0 0)
   (1 1 0 1 1 1 0 1 0 1 1 1 0 1 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4)
-  (0 0 0 0 3 0 4 0 0 4 3 0 0 0 1 1)
+  (1 1 0 0 3 0 4 0 0 4 3 0 0 0 1 1)
   (0 0 0 1 0 1 1 3 1 1 0 1 1 1 0 0)
   (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 1 0 0 4 0 0 0 0 0 0 4 0 0 4 5))))

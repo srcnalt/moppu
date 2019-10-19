@@ -65,7 +65,7 @@
 (defun check-collision-all (item)
   (setf collides nil)
   (loop
-    :for elem :in (nth (- *game-state* 1) *levels*)
+    :for elem :in (nth (- *game-state* 2) *levels*)
     :when (check-collision item elem)
     :do (setf collides t))
   collides)
@@ -143,29 +143,37 @@
   (bodge-canvas:antialias-shapes nil)
   (case *game-state*
     (0 (draw-menu))
-    (1 (draw-level))
+    (1 (gamekit:draw-image (gamekit:vec2 0 0) :controls-msg))
     (2 (draw-level))
     (3 (draw-level))
     (4 (draw-level))
     (5 (draw-level))
     (6 (draw-level))
     (7 (draw-level))
-    (8 (draw-level)))
+    (8 (draw-level))
+    (9 (draw-level))
+    (10 (gamekit:draw-image (gamekit:vec2 0 0) :credits-msg)))
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
     (draw-collider *player*)
     (loop
-        :for elem :in (nth (- *game-state* 1) *levels*)
+        :for elem :in (nth (- *game-state* 2) *levels*)
         :do (draw-collider elem)))
 )
+
+(defun move-next()
+  (when (and *menu-start-pressed* (= *transition-state* 0))
+    (setf *transition-state* 1)
+    (setf *level-switch* t)
+    (setf *end-wait* 0)))
 
 (defmethod gamekit:act ((app moppu))
   (transition)
   (case *game-state*
     (0 (update-menu))
-    (1 (update-game))
+    (1 (move-next))
     (2 (update-game))
     (3 (update-game))
     (4 (update-game))
@@ -173,30 +181,33 @@
     (6 (update-game))
     (7 (update-game))
     (8 (update-game))
-    (9 (reset-game)))) ;reset game
+    (9 (update-game))
+    (10 (move-next))
+    (11 (reset-game)))) ;reset game
 
 (defun reset-game()
   (setf *game-state* 0)
   (setf *end-wait* 0)
   (setf *end-message* :success-msg)
   (setf *collected-flowers* (list))
+  (setf *menu-start-pressed* nil)
   (setf *game-completed* nil))
 
 (defmethod gamekit:post-initialize ((this moppu))
   (gamekit:bind-button
-   :a :pressed
+   :left :pressed
    (lambda () (setf *move-dir* -1)))
 
   (gamekit:bind-button
-   :a :released
+   :left :released
    (lambda () (setf *move-dir* 0)))
 
   (gamekit:bind-button
-   :d :pressed
+   :right :pressed
    (lambda () (setf *move-dir* 1)))
 
   (gamekit:bind-button
-   :d :released
+   :right :released
    (lambda () (setf *move-dir* 0)))
 
   (gamekit:bind-button
@@ -208,10 +219,12 @@
    (lambda ()
      (case *game-state*
        (0 (setf *menu-start-pressed* t))
-       (1 (when *grounded* (jump)))
+       (1 (setf *menu-start-pressed* t))
        (2 (when *grounded* (jump)))
        (3 (when *grounded* (jump)))
        (4 (when *grounded* (jump)))
        (5 (when *grounded* (jump)))
        (6 (when *grounded* (jump)))
-       (7 (when *grounded* (jump)))))))
+       (7 (when *grounded* (jump)))
+       (8 (when *grounded* (jump)))
+       (10 (setf *menu-start-pressed* t))))))

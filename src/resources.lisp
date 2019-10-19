@@ -47,3 +47,5 @@
 (gamekit:define-image :menu-f-3 		"menu/menu-flower-3.png" 	:use-nearest-interpolation t)
 (gamekit:define-image :start-btn 		"menu/start.png" 					:use-nearest-interpolation t)
 (gamekit:define-image :start-prs 		"menu/start-pressed.png" 	:use-nearest-interpolation t)
+(gamekit:define-image :credits-msg	"messages/credits.png" 		:use-nearest-interpolation t)
+(gamekit:define-image :controls-msg	"messages/controls.png"   :use-nearest-interpolation t)
