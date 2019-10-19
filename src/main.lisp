@@ -20,6 +20,7 @@
 (defvar *debug* nil)
 
 ; player vars
+(defvar *locked* nil)
 (defvar *move-dir* 0)
 (defvar *velocity* 0)
 (defvar *grounded* t)
@@ -37,10 +38,11 @@
 
 ; Methods
 (defun update-position ()
+  (unless *locked*
   (setf (gamekit:x (rect *player*)) (+ (* *move-dir* *speed*) (gamekit:x (rect *player*))))
   (incf (gamekit:y (rect *player*)) *velocity*)
   (when (< (gamekit:x (rect *player*)) 0) (setf (gamekit:x (rect *player*)) 0))
-  (when (> (gamekit:x (rect *player*)) (- 80 (gamekit:z (rect *player*)))) (setf (gamekit:x (rect *player*)) (- 80 (gamekit:z (rect *player*))))))
+  (when (> (gamekit:x (rect *player*)) (- 80 (gamekit:z (rect *player*)))) (setf (gamekit:x (rect *player*)) (- 80 (gamekit:z (rect *player*)))))))
 
 (defun check-collision (item-a item-b)
   (setf collided
@@ -50,16 +52,16 @@
       (< (+ (gamekit:y (rect item-a)) (gamekit:w (coll item-a))) (- (+ (gamekit:y (rect item-b)) (gamekit:w (rect item-b))) (gamekit:z (coll item-b))))
       (> (- (+ (gamekit:y (rect item-a)) (gamekit:w (rect item-a))) (gamekit:z (coll item-a))) (+ (gamekit:y (rect item-b)) (gamekit:w (coll item-b))))))
   (if (and collided (is-trigger item-b))
-    (trigger-event item-b)
+    (funcall (trigger-event item-b) item-b)
     collided))
 
 (defun check-collision-all (item)
+  (setf collides nil)
   (loop
-    :with *collides* := nil
     :for elem :in (nth (- *game-state* 1) *levels*)
     :when (check-collision item elem)
-    :do (setf *collides* t)
-    (return *collides*)))
+    :do (setf collides t))
+  collides)
 
 (defun real-time-seconds ()
   "Return seconds since certain point of time"
@@ -67,14 +69,16 @@
 
 (defun draw-collider (elem)
   (if (is-trigger elem) (setf color (gamekit:vec4 0 0 1 0.5)) (setf color (gamekit:vec4 1 0 0 0.5)))
-  (gamekit:draw-rect
-  (gamekit:vec2 (+ (gamekit:x (rect elem)) (gamekit:x (coll elem))) (+ (gamekit:y (rect elem)) (gamekit:w (coll elem))))
-  (- (gamekit:z (rect elem)) (gamekit:x (coll elem)) (gamekit:y (coll elem)))
-  (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
-  :fill-paint color))
+    (gamekit:draw-rect
+    (gamekit:vec2 (+ (gamekit:x (rect elem)) (gamekit:x (coll elem))) (+ (gamekit:y (rect elem)) (gamekit:w (coll elem))))
+    (- (gamekit:z (rect elem)) (gamekit:x (coll elem)) (gamekit:y (coll elem)))
+    (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
+    :fill-paint color))
 
 (defvar *alpha* 0)
 (defvar *transition-state* 0)
+(defvar *level-switch* nil)
+
 (defun transition ()
   (case *transition-state*
     (1  ;darken
@@ -83,10 +87,14 @@
         (incf *transition-state*)))
     (2
       (setf
-        (gamekit:x (rect *player*)) 10
-        (gamekit:y (rect *player*)) 10)
-      (incf *game-state*)
-      (incf *transition-state*))
+        (gamekit:x (rect *player*)) 5
+        (gamekit:y (rect *player*)) 10
+        *velocity* 0
+        *locked* nil)
+      (incf *transition-state*)
+      (when *level-switch*
+        (incf *game-state*)
+        (setf *level-switch* nil)))
     (3  ;brighten
       (decf *alpha* 0.02)
       (when (<= *alpha* 0)
@@ -125,35 +133,18 @@
     (0
       (draw-menu))
     (1
-      (gamekit:draw-image (gamekit:vec2 0 0) :background)
-      (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
-      (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
-
-      (print-level (nth (- *game-state* 1) *levels*))
-
-      (case *move-dir*
-        (1  (gamekit:draw-image (draw-pos *player*) :player-right))
-        (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
-        (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
+      (draw-level))
     (2
-      (gamekit:draw-image (gamekit:vec2 0 0) :background)
-      (gamekit:draw-image (gamekit:vec2 *clouds-one-pos-x* 43) :clouds)
-      (gamekit:draw-image (gamekit:vec2 *clouds-two-pos-x* 43) :clouds)
-
-      (print-level (nth (- *game-state* 1) *levels*))
-
-      (case *move-dir*
-        (1  (gamekit:draw-image (draw-pos *player*) :player-right))
-        (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
-        (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
-  )
+      (draw-level))
+    (3
+      (draw-level)))
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
-    (gamekit:draw-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 1))
+    ;(gamekit:draw-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 1))
     ;(gamekit:print-text (format nil "Velocity: ~3a" *velocity*) (gamekit:vec2 1 56) :font (gamekit:make-font :sevenfour 7))
-    (gamekit:print-text (format nil "~a" *triggered*) 1 52)
+    ;(gamekit:print-text (format nil "~a" *triggered*) 1 52)
     ;(gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 1 54)
     (draw-collider *player*)
     (loop

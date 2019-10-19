@@ -9,6 +9,7 @@
 (gamekit:define-image :player-right "moppy-right.png" 		 		:use-nearest-interpolation t)
 (gamekit:define-image :player-left  "moppy-left.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :player-front "moppy-front.png" 	     	:use-nearest-interpolation t)
+(gamekit:define-image :player-cry   "moppy-cry.png" 	     	  :use-nearest-interpolation t)
 
 ; Level
 (gamekit:define-image :block 				"block.png" 			 				:use-nearest-interpolation t)
@@ -16,6 +17,11 @@
 (gamekit:define-image :clouds 			"clouds.png" 			 				:use-nearest-interpolation t)
 (gamekit:define-image :background 	"background.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :ground			 	"ground.png" 		 					:use-nearest-interpolation t)
+(gamekit:define-image :thorn-1			"thorn-1.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :thorn-2			"thorn-2.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :flower-1			"flower-1.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :flower-2			"flower-2.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :flower-3			"flower-3.png" 		 				:use-nearest-interpolation t)
 
 ; Menu
 (gamekit:define-image :letter-m 		"menu/letter-m.png" 	 		:use-nearest-interpolation t)

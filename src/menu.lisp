@@ -33,5 +33,6 @@
         (setf *transition-state* 1))))
   (when (= *transition-state* 2)
     (setf *flower-x* -2)
-    (setf *menu-start-pressed* nil))
+    (setf *menu-start-pressed* nil)
+    (incf *game-state*))
   (setf *letter-move* (* 2 (real-time-seconds))))
