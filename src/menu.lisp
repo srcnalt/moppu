@@ -30,6 +30,7 @@
     (if (> *flower-x* -25)
       (decf *flower-x* 0.3)
       (when (= *transition-state* 0)
+        (gamekit:stop-sound :snd-menu)
         (setf *transition-state* 1))))
   (when (= *transition-state* 2)
     (setf *flower-x* -2)

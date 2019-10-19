@@ -49,3 +49,11 @@
 (gamekit:define-image :start-prs 		"menu/start-pressed.png" 	:use-nearest-interpolation t)
 (gamekit:define-image :credits-msg	"messages/credits.png" 		:use-nearest-interpolation t)
 (gamekit:define-image :controls-msg	"messages/controls.png"   :use-nearest-interpolation t)
+
+; sound
+(gamekit:define-sound :snd-button 	"sound/button.wav")
+(gamekit:define-sound :snd-die	 		"sound/die.ogg")
+(gamekit:define-sound :snd-door	 		"sound/door.ogg")
+(gamekit:define-sound :snd-jump 		"sound/jump.ogg")
+(gamekit:define-sound :snd-menu		 	"sound/menu.ogg")
+(gamekit:define-sound :snd-pick		 	"sound/pick.ogg")

@@ -109,7 +109,8 @@
 
 (defun jump()
   (setf *velocity* 0.7)
-  (setf *grounded* nil))
+  (setf *grounded* nil)
+  (gamekit:play-sound :snd-jump))
 
 (defun update-game()
   (when (and (< *velocity* 0) (check-collision-all *player*))
@@ -196,6 +197,8 @@
   (setf *game-completed* nil))
 
 (defmethod gamekit:post-initialize ((this moppu))
+  (gamekit:play-sound :snd-menu :looped-p t)
+
   (gamekit:bind-button
    :left :pressed
    (lambda () (setf *move-dir* -1)))
