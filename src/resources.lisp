@@ -6,10 +6,11 @@
 (gamekit:define-font :sevenfour "fonts/SevenFour.ttf")
 
 ; Player
-(gamekit:define-image :player-right "moppy-right.png" 		 		:use-nearest-interpolation t)
-(gamekit:define-image :player-left  "moppy-left.png" 		 			:use-nearest-interpolation t)
-(gamekit:define-image :player-front "moppy-front.png" 	     	:use-nearest-interpolation t)
-(gamekit:define-image :player-cry   "moppy-cry.png" 	     	  :use-nearest-interpolation t)
+(gamekit:define-image :player-right "moppu-right.png" 		 		:use-nearest-interpolation t)
+(gamekit:define-image :player-left  "moppu-left.png" 		 			:use-nearest-interpolation t)
+(gamekit:define-image :player-front "moppu-front.png" 	     	:use-nearest-interpolation t)
+(gamekit:define-image :player-cry   "moppu-cry.png" 	     	  :use-nearest-interpolation t)
+(gamekit:define-image :mippu        "mippu.png" 	     	      :use-nearest-interpolation t)
 
 ; Level
 (gamekit:define-image :block 				"block.png" 			 				:use-nearest-interpolation t)
@@ -27,6 +28,12 @@
 (gamekit:define-image :flower-1-s		"flower-1-s.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :flower-2-s		"flower-2-s.png" 		 			:use-nearest-interpolation t)
 (gamekit:define-image :flower-3-s		"flower-3-s.png" 		 			:use-nearest-interpolation t)
+
+; Messages
+(gamekit:define-image :yellow-msg		"messages/msg-yellow.png" :use-nearest-interpolation t)
+(gamekit:define-image :red-msg		  "messages/msg-red.png" 		:use-nearest-interpolation t)
+(gamekit:define-image :purple-msg		"messages/msg-purple.png" :use-nearest-interpolation t)
+(gamekit:define-image :success-msg	"messages/success.png" 		:use-nearest-interpolation t)
 
 ; Menu
 (gamekit:define-image :letter-m 		"menu/letter-m.png" 	 		:use-nearest-interpolation t)

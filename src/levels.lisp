@@ -3,6 +3,10 @@
 (defvar *level-col* 16)
 (defvar *level-row* 7)
 
+(defvar *end-message* :success-msg)
+(defvar *game-completed* nil)
+(defvar *end-wait* 0)
+
 (defvar *collected-flowers* (list))
 
 (defun load-level (level level-blocks)
@@ -67,7 +71,15 @@
           (setf (coll flower) (gamekit:vec4 1 1 0 4))
           (setf (is-trigger flower) t)
           (setf (trigger-event flower) #'collect-flower)
-          (push flower (cdr (last level-blocks))))))))
+          (push flower (cdr (last level-blocks))))
+        (8
+          (setf mippu (make-instance 'game-object))
+          (setf (src  mippu) :mippu)
+          (setf (rect mippu) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 6))
+          (setf (coll mippu) (gamekit:vec4 -3 0 0 0))
+          (setf (is-trigger mippu) t)
+          (setf (trigger-event mippu) #'select-message)
+          (push mippu (cdr (last level-blocks))))))))
 
 (defun draw-level ()
   (gamekit:draw-image (gamekit:vec2 0 0) :background)
@@ -85,11 +97,17 @@
       (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
       (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
 
-  (gamekit:draw-image (gamekit:vec2 10 55) :score)
-
-  (loop
-    :for flower :in *collected-flowers*
-    :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 55) (alt flower))))
+  (when (and (= *game-state* 8) *game-completed*)
+    (gamekit:draw-image (gamekit:vec2 0 25) *end-message*)
+    (incf *end-wait* 0.01)
+    (when (and (> *end-wait* 5) (= *transition-state* 0))
+      (incf *transition-state*)
+      (setf *level-switch* t)))
+  (unless (= *game-state* 8)
+    (gamekit:draw-image (gamekit:vec2 10 55) :score)
+    (loop
+      :for flower :in *collected-flowers*
+      :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 55) (alt flower)))))
 
 (defmethod trigger-door ((object game-object))
   (when (= *transition-state* 0)
@@ -106,6 +124,26 @@
 (defmethod collect-flower ((object game-object))
   (push object *collected-flowers*)
   (setf (nth (- *game-state* 1) *levels*) (remove object (nth (- *game-state* 1) *levels*)))
+  nil)
+
+(defmethod select-message ((object game-object))
+  (setf ylw-count 0)
+  (setf red-count 0)
+  (setf prp-count 0)
+
+  (loop :for elem :in *collected-flowers*
+    :do (case (src elem)
+      (:flower-1 (incf ylw-count))
+      (:flower-2 (incf red-count))
+      (:flower-3 (incf prp-count))))
+
+  (if (> ylw-count 0) (setf *end-message* :yellow-msg))
+  (if (> red-count 0) (setf *end-message* :red-msg))
+  (if (> prp-count 0) (setf *end-message* :purple-msg))
+
+  (setf *locked* t)
+  (setf *game-completed* t)
+
   nil)
 
 (defvar *ground* (make-instance 'game-object))
@@ -211,4 +249,18 @@
 
 (load-level *level-7* *level-7-blocks*)
 
-(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks* *level-5-blocks* *level-6-blocks* *level-7-blocks*))
+;;; Level 8
+(defvar *level-8-blocks* (list *ground*))
+
+(defparameter *level-8* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0))))
+
+(load-level *level-8* *level-8-blocks*)
+
+(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks* *level-5-blocks* *level-6-blocks* *level-7-blocks* *level-8-blocks*))

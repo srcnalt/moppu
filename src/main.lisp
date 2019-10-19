@@ -34,7 +34,7 @@
 (defvar *triggered* nil)
 (defvar *map-blocks* nil)
 
-(defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
+(defvar *game-state* 8) ; 0- menu, 1- game, 2- credits
 
 ; Methods
 (defun update-position ()
@@ -149,7 +149,8 @@
     (4 (draw-level))
     (5 (draw-level))
     (6 (draw-level))
-    (7 (draw-level)))
+    (7 (draw-level))
+    (8 (draw-level)))
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
@@ -171,7 +172,15 @@
     (5 (update-game))
     (6 (update-game))
     (7 (update-game))
-    (8 (setf *game-state* 0))))
+    (8 (update-game))
+    (9 (reset-game)))) ;reset game
+
+(defun reset-game()
+  (setf *game-state* 0)
+  (setf *end-wait* 0)
+  (setf *end-message* :success-msg)
+  (setf *collected-flowers* (list))
+  (setf *game-completed* nil))
 
 (defmethod gamekit:post-initialize ((this moppu))
   (gamekit:bind-button
