@@ -19,10 +19,14 @@
 (gamekit:define-image :ground			 	"ground.png" 		 					:use-nearest-interpolation t)
 (gamekit:define-image :thorn-1			"thorn-1.png" 		 				:use-nearest-interpolation t)
 (gamekit:define-image :thorn-2			"thorn-2.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :score			  "score.png" 		 				  :use-nearest-interpolation t)
+
 (gamekit:define-image :flower-1			"flower-1.png" 		 				:use-nearest-interpolation t)
 (gamekit:define-image :flower-2			"flower-2.png" 		 				:use-nearest-interpolation t)
 (gamekit:define-image :flower-3			"flower-3.png" 		 				:use-nearest-interpolation t)
-(gamekit:define-image :score			  "score.png" 		 				  :use-nearest-interpolation t)
+(gamekit:define-image :flower-1-s		"flower-1-s.png" 		 			:use-nearest-interpolation t)
+(gamekit:define-image :flower-2-s		"flower-2-s.png" 		 			:use-nearest-interpolation t)
+(gamekit:define-image :flower-3-s		"flower-3-s.png" 		 			:use-nearest-interpolation t)
 
 ; Menu
 (gamekit:define-image :letter-m 		"menu/letter-m.png" 	 		:use-nearest-interpolation t)

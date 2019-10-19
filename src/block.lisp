@@ -2,6 +2,7 @@
 
 (defclass game-object ()(
   (src  :accessor src)
+  (alt  :accessor alt)
   (rect :accessor rect)
   (coll :accessor coll)
   (hit-coll :accessor hit-coll)
