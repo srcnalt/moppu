@@ -4,6 +4,7 @@
   (src  :accessor src)
   (rect :accessor rect)
   (coll :accessor coll)
+  (hit-coll :accessor hit-coll)
   (draw-pos :reader draw-pos)
   (is-trigger  :accessor is-trigger :initform nil)
   (trigger-event :initform #'trigger-door  :accessor trigger-event)))

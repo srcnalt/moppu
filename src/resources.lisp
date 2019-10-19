@@ -22,6 +22,7 @@
 (gamekit:define-image :flower-1			"flower-1.png" 		 				:use-nearest-interpolation t)
 (gamekit:define-image :flower-2			"flower-2.png" 		 				:use-nearest-interpolation t)
 (gamekit:define-image :flower-3			"flower-3.png" 		 				:use-nearest-interpolation t)
+(gamekit:define-image :score			  "score.png" 		 				  :use-nearest-interpolation t)
 
 ; Menu
 (gamekit:define-image :letter-m 		"menu/letter-m.png" 	 		:use-nearest-interpolation t)

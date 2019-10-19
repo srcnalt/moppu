@@ -46,14 +46,21 @@
 
 (defun check-collision (item-a item-b)
   (setf collided
-    (and
+    (and (not (is-trigger item-b))
       (< (+ (gamekit:x (rect item-a)) (gamekit:x (coll item-a))) (- (+ (gamekit:x (rect item-b)) (gamekit:z (rect item-b))) (gamekit:y (coll item-b))))
       (> (- (+ (gamekit:x (rect item-a)) (gamekit:z (rect item-a))) (gamekit:y (coll item-a))) (+ (gamekit:x (rect item-b)) (gamekit:x (coll item-b))))
       (< (+ (gamekit:y (rect item-a)) (gamekit:w (coll item-a))) (- (+ (gamekit:y (rect item-b)) (gamekit:w (rect item-b))) (gamekit:z (coll item-b))))
       (> (- (+ (gamekit:y (rect item-a)) (gamekit:w (rect item-a))) (gamekit:z (coll item-a))) (+ (gamekit:y (rect item-b)) (gamekit:w (coll item-b))))))
-  (if (and collided (is-trigger item-b))
-    (funcall (trigger-event item-b) item-b)
-    collided))
+
+  (setf hit
+    (and (is-trigger item-b)
+      (< (+ (gamekit:x (rect item-a)) (gamekit:x (hit-coll item-a))) (- (+ (gamekit:x (rect item-b)) (gamekit:z (rect item-b))) (gamekit:y (coll item-b))))
+      (> (- (+ (gamekit:x (rect item-a)) (gamekit:z (rect item-a))) (gamekit:y (hit-coll item-a))) (+ (gamekit:x (rect item-b)) (gamekit:x (coll item-b))))
+      (< (+ (gamekit:y (rect item-a)) (gamekit:w (hit-coll item-a))) (- (+ (gamekit:y (rect item-b)) (gamekit:w (rect item-b))) (gamekit:z (coll item-b))))
+      (> (- (+ (gamekit:y (rect item-a)) (gamekit:w (rect item-a))) (gamekit:z (hit-coll item-a))) (+ (gamekit:y (rect item-b)) (gamekit:w (coll item-b))))))
+
+  (if hit (funcall (trigger-event item-b) item-b))
+  collided)
 
 (defun check-collision-all (item)
   (setf collides nil)
@@ -69,11 +76,11 @@
 
 (defun draw-collider (elem)
   (if (is-trigger elem) (setf color (gamekit:vec4 0 0 1 0.5)) (setf color (gamekit:vec4 1 0 0 0.5)))
-    (gamekit:draw-rect
-    (gamekit:vec2 (+ (gamekit:x (rect elem)) (gamekit:x (coll elem))) (+ (gamekit:y (rect elem)) (gamekit:w (coll elem))))
-    (- (gamekit:z (rect elem)) (gamekit:x (coll elem)) (gamekit:y (coll elem)))
-    (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
-    :fill-paint color))
+  (gamekit:draw-rect
+  (gamekit:vec2 (+ (gamekit:x (rect elem)) (gamekit:x (coll elem))) (+ (gamekit:y (rect elem)) (gamekit:w (coll elem))))
+  (- (gamekit:z (rect elem)) (gamekit:x (coll elem)) (gamekit:y (coll elem)))
+  (- (gamekit:w (rect elem)) (gamekit:z (coll elem)) (gamekit:w (coll elem)))
+  :fill-paint color))
 
 (defvar *alpha* 0)
 (defvar *transition-state* 0)
@@ -100,6 +107,10 @@
       (when (<= *alpha* 0)
         (setf *transition-state* 0)))))
 
+(defun jump()
+  (setf *velocity* 0.7)
+  (setf *grounded* nil))
+
 (defun update-game()
   (when (and (< *velocity* 0) (check-collision-all *player*))
     (setf *grounded* t)
@@ -124,7 +135,8 @@
 (defvar *player* (make-instance 'game-object))
 (setf (src  *player*) nil)
 (setf (rect *player*) (gamekit:vec4 10 10 5 6))
-(setf (coll *player*) (gamekit:vec4 1 1 5 0))
+(setf (coll *player*) (gamekit:vec4 1 1 5.5 0))
+(setf (hit-coll *player*) (gamekit:vec4 1 1 0 0))
 
 ; Game logic
 (defmethod gamekit:draw ((app moppu))
@@ -142,10 +154,6 @@
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
   (when *debug*
-    ;(gamekit:draw-text (format nil "Grounded: ~a"  *grounded*) (gamekit:vec2 1 58) :font (gamekit:make-font :sevenfour 1))
-    ;(gamekit:print-text (format nil "Velocity: ~3a" *velocity*) (gamekit:vec2 1 56) :font (gamekit:make-font :sevenfour 7))
-    ;(gamekit:print-text (format nil "~a" *triggered*) 1 52)
-    ;(gamekit:print-text (format nil "Collides: ~a" (check-collision-all *player*)) 1 54)
     (draw-collider *player*)
     (loop
         :for elem :in (nth (- *game-state* 1) *levels*)
@@ -162,6 +170,8 @@
     (2
       (update-game))
     (3
+      (update-game))
+    (4
       (setf *game-state* 0))))
 
 (defmethod gamekit:post-initialize ((this moppu))
@@ -190,10 +200,6 @@
    (lambda ()
      (case *game-state*
        (0 (setf *menu-start-pressed* t))
-
-       (1 (when *grounded*
-            (setf *velocity* 0.7)
-            (setf *grounded* nil)))
-       (2 (when *grounded*
-            (setf *velocity* 0.7)
-            (setf *grounded* nil)))))))
+       (1 (when *grounded* (jump)))
+       (2 (when *grounded* (jump)))
+       (3 (when *grounded* (jump)))))))
