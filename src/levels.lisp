@@ -103,7 +103,7 @@
     (when (and (> *end-wait* 5) (= *transition-state* 0))
       (incf *transition-state*)
       (setf *level-switch* t)))
-  (unless (= *game-state* 8)
+  (unless (= *game-state* 9)
     (gamekit:draw-image (gamekit:vec2 10 55) :score)
     (loop
       :for flower :in *collected-flowers*
@@ -151,9 +151,6 @@
 (setf (rect *ground*) (gamekit:vec4 0 0 80 14))
 (setf (coll *ground*) (gamekit:vec4 0 0 4 0))
 
-;;; Level 1
-(defvar *level-1-blocks* (list *ground*))
-
 (defparameter *level-1* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -162,12 +159,6 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 5 0 0 0 0 0 0 2 0))))
-
-(load-level *level-1* *level-1-blocks*)
-
-;;; Level 2
-(defvar *level-2-blocks* (list *ground*))
-
 (defparameter *level-2* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -176,12 +167,6 @@
   (1 1 1 0 0 1 1 0 0 1 1 0 0 0 0 7)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
-
-(load-level *level-2* *level-2-blocks*)
-
-;;; Level 3
-(defvar *level-3-blocks* (list *ground*))
-
 (defparameter *level-3* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0)
@@ -190,12 +175,6 @@
   (0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 0)
   (0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
-
-(load-level *level-3* *level-3-blocks*)
-
-;;; Level 4
-(defvar *level-4-blocks* (list *ground*))
-
 (defparameter *level-4* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -204,12 +183,6 @@
   (0 0 0 1 1 1 0 0 1 1 0 0 4 0 4 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
   (0 0 0 0 4 0 0 0 4 0 0 0 0 0 0 0))))
-
-(load-level *level-4* *level-4-blocks*)
-
-;;; Level 5
-(defvar *level-5-blocks* (list *ground*))
-
 (defparameter *level-5* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -218,12 +191,6 @@
   (0 0 0 3 0 0 0 0 0 0 0 3 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 7 0 0 0 4 0 0 0 6 0 0 2 0))))
-
-(load-level *level-5* *level-5-blocks*)
-
-;;; Level 6
-(defvar *level-6-blocks* (list *ground*))
-
 (defparameter *level-6* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0)
@@ -232,12 +199,6 @@
   (0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0)
   (0 0 0 1 1 0 0 0 0 0 0 1 1 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
-
-(load-level *level-6* *level-6-blocks*)
-
-;;; Level 7
-(defvar *level-7-blocks* (list *ground*))
-
 (defparameter *level-7* (make-array (list *level-row* *level-col*) :initial-contents '(
   (2 0 0 0 4 0 0 0 0 6 0 4 0 0 0 0)
   (1 1 0 1 1 1 0 1 0 1 1 1 0 1 0 0)
@@ -246,12 +207,6 @@
   (0 0 0 1 0 1 1 3 1 1 0 1 1 1 0 0)
   (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 1 0 0 4 0 0 0 0 0 0 4 0 0 4 5))))
-
-(load-level *level-7* *level-7-blocks*)
-
-;;; Level 8
-(defvar *level-8-blocks* (list *ground*))
-
 (defparameter *level-8* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -261,6 +216,35 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0))))
 
-(load-level *level-8* *level-8-blocks*)
+(defvar *level-1-blocks* (list))
+(defvar *level-2-blocks* (list))
+(defvar *level-3-blocks* (list))
+(defvar *level-4-blocks* (list))
+(defvar *level-5-blocks* (list))
+(defvar *level-6-blocks* (list))
+(defvar *level-7-blocks* (list))
+(defvar *level-8-blocks* (list))
+(defvar *levels*)
 
-(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks* *level-5-blocks* *level-6-blocks* *level-7-blocks* *level-8-blocks*))
+(defun load-all-levels()
+  (setf *level-1-blocks* (list *ground*))
+  (setf *level-2-blocks* (list *ground*))
+  (setf *level-3-blocks* (list *ground*))
+  (setf *level-4-blocks* (list *ground*))
+  (setf *level-5-blocks* (list *ground*))
+  (setf *level-6-blocks* (list *ground*))
+  (setf *level-7-blocks* (list *ground*))
+  (setf *level-8-blocks* (list *ground*))
+
+  (load-level *level-1* *level-1-blocks*)
+  (load-level *level-2* *level-2-blocks*)
+  (load-level *level-3* *level-3-blocks*)
+  (load-level *level-4* *level-4-blocks*)
+  (load-level *level-5* *level-5-blocks*)
+  (load-level *level-6* *level-6-blocks*)
+  (load-level *level-7* *level-7-blocks*)
+  (load-level *level-8* *level-8-blocks*)
+
+  (setf *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks* *level-5-blocks* *level-6-blocks* *level-7-blocks* *level-8-blocks*)))
+
+(load-all-levels)

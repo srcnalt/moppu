@@ -34,7 +34,7 @@
 (defvar *triggered* nil)
 (defvar *map-blocks* nil)
 
-(defvar *game-state* 8) ; 0- menu, 1- game, 2- credits
+(defvar *game-state* 0) ; 0- menu, 1- game, 2- credits
 
 ; Methods
 (defun update-position ()
@@ -167,7 +167,8 @@
   (when (and *menu-start-pressed* (= *transition-state* 0))
     (setf *transition-state* 1)
     (setf *level-switch* t)
-    (setf *end-wait* 0)))
+    (setf *end-wait* 0)
+    (setf *menu-start-pressed* nil)))
 
 (defmethod gamekit:act ((app moppu))
   (transition)
@@ -186,6 +187,7 @@
     (11 (reset-game)))) ;reset game
 
 (defun reset-game()
+  (load-all-levels)
   (setf *game-state* 0)
   (setf *end-wait* 0)
   (setf *end-message* :success-msg)
