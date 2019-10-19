@@ -142,20 +142,14 @@
 (defmethod gamekit:draw ((app moppu))
   (bodge-canvas:antialias-shapes nil)
   (case *game-state*
-    (0
-      (draw-menu))
-    (1
-      (draw-level))
-    (2
-      (draw-level))
-    (3
-      (draw-level))
-    (4
-      (draw-level))
-    (5
-      (draw-level))
-    (6
-      (draw-level)))
+    (0 (draw-menu))
+    (1 (draw-level))
+    (2 (draw-level))
+    (3 (draw-level))
+    (4 (draw-level))
+    (5 (draw-level))
+    (6 (draw-level))
+    (7 (draw-level)))
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
 
@@ -169,22 +163,15 @@
 (defmethod gamekit:act ((app moppu))
   (transition)
   (case *game-state*
-    (0
-      (update-menu))
-    (1
-      (update-game))
-    (2
-      (update-game))
-    (3
-      (update-game))
-    (4
-      (update-game))
-    (5
-      (update-game))
-    (6
-      (update-game))
-    (7
-      (setf *game-state* 0))))
+    (0 (update-menu))
+    (1 (update-game))
+    (2 (update-game))
+    (3 (update-game))
+    (4 (update-game))
+    (5 (update-game))
+    (6 (update-game))
+    (7 (update-game))
+    (8 (setf *game-state* 0))))
 
 (defmethod gamekit:post-initialize ((this moppu))
   (gamekit:bind-button
@@ -217,4 +204,5 @@
        (3 (when *grounded* (jump)))
        (4 (when *grounded* (jump)))
        (5 (when *grounded* (jump)))
-       (6 (when *grounded* (jump)))))))
+       (6 (when *grounded* (jump)))
+       (7 (when *grounded* (jump)))))))
