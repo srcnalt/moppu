@@ -29,13 +29,15 @@
           (setf (rect thorn) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
           (setf (coll thorn) (gamekit:vec4 0 0 0 0))
           (setf (is-trigger thorn) t)
+          (setf (is-moving thorn) t)
+          (setf (init-y thorn) (gamekit:y (rect thorn)))
           (setf (trigger-event thorn) #'thorn-hit)
           (push thorn (cdr (last level-blocks))))
         (4
           (setf thorn (make-instance 'game-object))
           (setf (src  thorn) :thorn-2)
           (setf (rect thorn) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
-          (setf (coll thorn) (gamekit:vec4 0 0 0 0))
+          (setf (coll thorn) (gamekit:vec4 0 0 2 0))
           (setf (is-trigger thorn) t)
           (setf (trigger-event thorn) #'thorn-hit)
           (push thorn (cdr (last level-blocks))))
@@ -118,7 +120,7 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 5 0 0 0 0 0 2 0))))
@@ -133,7 +135,7 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (1 1 1 0 0 1 1 0 0 1 1 0 0 0 0 0)
+  (1 1 1 0 0 1 1 0 0 1 1 0 0 0 0 7)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
@@ -143,14 +145,28 @@
 (defvar *level-3-blocks* (list *ground*))
 
 (defparameter *level-3* (make-array (list *level-row* *level-col*) :initial-contents '(
-  (0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0)
-  (0 0 0 7 0 0 0 0 0 0 0 0 6 0 0 0)
-  (0 0 1 1 1 0 3 1 1 3 0 1 1 1 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0)
-  (0 0 0 0 4 0 0 0 0 0 4 0 0 0 0 0))))
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
+  (0 0 0 0 0 0 4 0 6 0 4 1 0 0 0 0)
+  (0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0)
+  (0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
 (load-level *level-3* *level-3-blocks*)
 
-(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks*))
+;;; Level 4
+(defvar *level-4-blocks* (list *ground*))
+
+(defparameter *level-4* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 5 0 0 0 0 0 2 0))))
+
+(load-level *level-4* *level-4-blocks*)
+
+(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks*))
