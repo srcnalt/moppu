@@ -19,7 +19,7 @@
           (setf door (make-instance 'game-object))
           (setf (src  door) :door)
           (setf (rect door) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 10 10))
-          (setf (coll door) (gamekit:vec4 2 2 1 5))
+          (setf (coll door) (gamekit:vec4 3 3 0 4))
           (setf (is-trigger door) t)
           (setf (trigger-event door) #'trigger-door)
           (push door (cdr (last level-blocks))))
@@ -42,6 +42,7 @@
         (5
           (setf flower (make-instance 'game-object))
           (setf (src  flower) :flower-1)
+          (setf (alt  flower) :flower-1-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
           (setf (coll flower) (gamekit:vec4 1 1 0 0))
           (setf (is-trigger flower) t)
@@ -50,6 +51,7 @@
         (6
           (setf flower (make-instance 'game-object))
           (setf (src  flower) :flower-2)
+          (setf (alt  flower) :flower-2-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
           (setf (coll flower) (gamekit:vec4 1 1 0 0))
           (setf (is-trigger flower) t)
@@ -58,6 +60,7 @@
         (7
           (setf flower (make-instance 'game-object))
           (setf (src  flower) :flower-3)
+          (setf (alt  flower) :flower-3-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
           (setf (coll flower) (gamekit:vec4 1 1 0 0))
           (setf (is-trigger flower) t)
@@ -80,11 +83,11 @@
       (-1 (gamekit:draw-image (draw-pos *player*) :player-left))
       (0  (gamekit:draw-image (draw-pos *player*) :player-front))))
 
-  (gamekit:draw-image (gamekit:vec2 10 52) :score)
+  (gamekit:draw-image (gamekit:vec2 10 55) :score)
 
   (loop
     :for flower :in *collected-flowers*
-    :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 54) flower)))
+    :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 55) flower)))
 
 (defmethod trigger-door ((object game-object))
   (when (= *transition-state* 0)
@@ -99,7 +102,7 @@
   nil)
 
 (defmethod collect-flower ((object game-object))
-  (push (src object) *collected-flowers*)
+  (push (alt object) *collected-flowers*)
   (setf (nth (- *game-state* 1) *levels*) (remove object (nth (- *game-state* 1) *levels*)))
   nil)
 
@@ -131,7 +134,7 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (1 1 1 0 0 1 1 0 0 1 1 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
 (load-level *level-2* *level-2-blocks*)
@@ -146,7 +149,7 @@
   (0 0 1 1 1 0 3 1 1 3 0 1 1 1 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0)
-  (0 0 0 0 4 0 0 0 0 0 0 4 0 0 0 0))))
+  (0 0 0 0 4 0 0 0 0 0 4 0 0 0 0 0))))
 
 (load-level *level-3* *level-3-blocks*)
 
