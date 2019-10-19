@@ -14,6 +14,6 @@
 
 (defmethod draw-pos ((object game-object))
   (if (is-moving object)
-    (setf (gamekit:y (rect object)) (+ (init-y object) (* 10 (sin (real-time-seconds)))))
+    (setf (gamekit:y (rect object)) (+ (init-y object) (* 10 (sin (* 1.5 (real-time-seconds))))))
     (gamekit:vec2 (gamekit:x (rect object)) (gamekit:y (rect object))))
   (gamekit:vec2 (gamekit:x (rect object)) (gamekit:y (rect object))))

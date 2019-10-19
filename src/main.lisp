@@ -94,7 +94,7 @@
         (incf *transition-state*)))
     (2
       (setf
-        (gamekit:x (rect *player*)) 5
+        (gamekit:x (rect *player*)) 0
         (gamekit:y (rect *player*)) 10
         *velocity* 0
         *locked* nil)
@@ -134,7 +134,7 @@
 
 (defvar *player* (make-instance 'game-object))
 (setf (src  *player*) nil)
-(setf (rect *player*) (gamekit:vec4 10 10 5 6))
+(setf (rect *player*) (gamekit:vec4 0 10 5 6))
 (setf (coll *player*) (gamekit:vec4 1 1 5.5 0))
 (setf (hit-coll *player*) (gamekit:vec4 1 1 0 0))
 
@@ -149,6 +149,12 @@
     (2
       (draw-level))
     (3
+      (draw-level))
+    (4
+      (draw-level))
+    (5
+      (draw-level))
+    (6
       (draw-level)))
 
   (gamekit:draw-rect (gamekit:vec2 0 0) 80 60 :fill-paint (gamekit:vec4 0 0 0 *alpha*))
@@ -172,6 +178,12 @@
     (3
       (update-game))
     (4
+      (update-game))
+    (5
+      (update-game))
+    (6
+      (update-game))
+    (7
       (setf *game-state* 0))))
 
 (defmethod gamekit:post-initialize ((this moppu))
@@ -202,4 +214,7 @@
        (0 (setf *menu-start-pressed* t))
        (1 (when *grounded* (jump)))
        (2 (when *grounded* (jump)))
-       (3 (when *grounded* (jump)))))))
+       (3 (when *grounded* (jump)))
+       (4 (when *grounded* (jump)))
+       (5 (when *grounded* (jump)))
+       (6 (when *grounded* (jump)))))))

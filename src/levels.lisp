@@ -46,7 +46,7 @@
           (setf (src  flower) :flower-1)
           (setf (alt  flower) :flower-1-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
-          (setf (coll flower) (gamekit:vec4 1 1 0 0))
+          (setf (coll flower) (gamekit:vec4 1 1 0 4))
           (setf (is-trigger flower) t)
           (setf (trigger-event flower) #'collect-flower)
           (push flower (cdr (last level-blocks))))
@@ -55,7 +55,7 @@
           (setf (src  flower) :flower-2)
           (setf (alt  flower) :flower-2-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
-          (setf (coll flower) (gamekit:vec4 1 1 0 0))
+          (setf (coll flower) (gamekit:vec4 1 1 0 4))
           (setf (is-trigger flower) t)
           (setf (trigger-event flower) #'collect-flower)
           (push flower (cdr (last level-blocks))))
@@ -64,7 +64,7 @@
           (setf (src  flower) :flower-3)
           (setf (alt  flower) :flower-3-s)
           (setf (rect flower) (gamekit:vec4 (* j 5) (+ 10 (* (- *level-row* i 1) 5)) 5 5))
-          (setf (coll flower) (gamekit:vec4 1 1 0 0))
+          (setf (coll flower) (gamekit:vec4 1 1 0 4))
           (setf (is-trigger flower) t)
           (setf (trigger-event flower) #'collect-flower)
           (push flower (cdr (last level-blocks))))))))
@@ -89,7 +89,7 @@
 
   (loop
     :for flower :in *collected-flowers*
-    :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 55) flower)))
+    :do (gamekit:draw-image (gamekit:vec2 (+ 5 (* 5 (- (list-length *collected-flowers*) (position flower *collected-flowers*)))) 55) (alt flower))))
 
 (defmethod trigger-door ((object game-object))
   (when (= *transition-state* 0)
@@ -104,7 +104,7 @@
   nil)
 
 (defmethod collect-flower ((object game-object))
-  (push (alt object) *collected-flowers*)
+  (push object *collected-flowers*)
   (setf (nth (- *game-state* 1) *levels*) (remove object (nth (- *game-state* 1) *levels*)))
   nil)
 
@@ -120,10 +120,10 @@
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 5 0 0 0 0 0 2 0))))
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 5 0 0 0 0 0 0 2 0))))
 
 (load-level *level-1* *level-1-blocks*)
 
@@ -147,10 +147,10 @@
 (defparameter *level-3* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
-  (0 0 0 0 0 0 4 0 6 0 4 1 0 0 0 0)
-  (0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0)
-  (0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1)
+  (0 0 0 0 0 4 0 0 6 0 0 4 1 0 0 0)
+  (0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 0)
+  (0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0)
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))))
 
 (load-level *level-3* *level-3-blocks*)
@@ -160,13 +160,55 @@
 
 (defparameter *level-4* (make-array (list *level-row* *level-col*) :initial-contents '(
   (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-  (0 0 0 0 0 0 0 0 5 0 0 0 0 0 2 0))))
+  (0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 1 1 1 0 0 1 1 1 0 4 0 0 0)
+  (0 0 0 5 0 0 0 0 6 0 0 0 1 1 1 1)
+  (0 0 0 1 1 1 0 0 1 1 0 0 4 0 4 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1)
+  (0 0 0 0 4 0 0 0 4 0 0 0 0 0 0 0))))
 
 (load-level *level-4* *level-4-blocks*)
 
-(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks*))
+;;; Level 5
+(defvar *level-5-blocks* (list *ground*))
+
+(defparameter *level-5* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0)
+  (0 0 0 3 0 0 0 0 0 0 0 3 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 4 7 0 0 6 0 0 2 0))))
+
+(load-level *level-5* *level-5-blocks*)
+
+;;; Level 6
+(defvar *level-6-blocks* (list *ground*))
+
+(defparameter *level-6* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0))))
+
+(load-level *level-6* *level-6-blocks*)
+
+;;; Level 7
+(defvar *level-7-blocks* (list *ground*))
+
+(defparameter *level-7* (make-array (list *level-row* *level-col*) :initial-contents '(
+  (2 0 0 0 4 0 0 0 0 0 6 4 0 0 0 0)
+  (1 1 0 1 1 1 0 0 0 1 1 1 0 1 0 0)
+  (0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4)
+  (0 0 0 0 3 0 4 0 0 4 3 0 0 0 1 1)
+  (0 0 0 1 0 1 1 3 1 1 0 1 1 1 0 0)
+  (0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0)
+  (0 1 0 0 4 0 0 0 0 0 0 4 0 0 4 5))))
+
+(load-level *level-7* *level-7-blocks*)
+
+(defvar *levels* (list *level-1-blocks* *level-2-blocks* *level-3-blocks* *level-4-blocks* *level-5-blocks* *level-6-blocks* *level-7-blocks*))
