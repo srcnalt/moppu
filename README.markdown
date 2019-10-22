@@ -33,7 +33,7 @@ To run from REPL, clone project into ~/quicklisp/local-projects/ and run the fol
 
 ## Play the Builds
 You can download the game for Windows, Mac and Linux from here.
-https://github.com/borodust/moppu/releases/tag/v1.0.0
+https://github.com/borodust/moppu/releases
 
 ## Controls
 | Control  | Keyboard |
