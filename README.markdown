@@ -9,7 +9,7 @@ Lisp Game Jam Autumn 2019 Entry
 - Quicklisp
 
 ## How to install SBCL or CCL
-- Go to http://www.sbcl.org or https://ccl.clozure.com and down load the tool.
+- Go to http://www.sbcl.org or https://ccl.clozure.com and download the tool.
 - After sbcl is installed you can call it with the command `sbcl` from command line.
 - After ccl is installed run the exe in the folder and you are ready to go.
 
