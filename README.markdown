@@ -1,5 +1,8 @@
 # Moppu
 Lisp Game Jam Autumn 2019 Entry
+Play it here: https://sarge.itch.io/moppu
+
+![+D90t7](https://github.com/srcnalt/moppu/assets/3163281/e4308313-952c-4e2d-b484-ab40c7d7fc88)
 
 ## Requirements
 
